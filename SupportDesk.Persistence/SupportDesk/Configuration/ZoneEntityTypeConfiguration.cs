@@ -32,6 +32,13 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
                 .WithOne(r => r.Zone)
                 .HasForeignKey(r => r.ZoneId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasData(
+                new Zone { ZoneId = 1, Description = "Zona Norte", Abbreviation = "ZN" },
+                new Zone { ZoneId = 2, Description = "Zona Sur", Abbreviation = "ZS" },
+                new Zone { ZoneId = 3, Description = "Zona Centro", Abbreviation = "ZC" },
+                new Zone { ZoneId = 4, Description = "Zona Occidente", Abbreviation = "ZO" }
+            );
         }
     }
 }
