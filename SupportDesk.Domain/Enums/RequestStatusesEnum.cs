@@ -1,6 +1,6 @@
 ﻿namespace SupportDesk.Domain.Enums
 {
-    public enum RequestStatuses
+    public enum RequestStatusesEnum
     {
         New = 1,
         UnderReview = 2,

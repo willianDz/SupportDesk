@@ -58,14 +58,14 @@ namespace SupportDesk.Domain.UnitTests.Entities
             // Arrange
             var request = new Request
             {
-                RequestStatusId = (int)RequestStatuses.New
+                RequestStatusId = (int)RequestStatusesEnum.New
             };
 
             // Act
-            request.RequestStatusId = (int)RequestStatuses.UnderReview;
+            request.RequestStatusId = (int)RequestStatusesEnum.UnderReview;
 
             // Assert
-            request.RequestStatusId.Should().Be((int)RequestStatuses.UnderReview);
+            request.RequestStatusId.Should().Be((int)RequestStatusesEnum.UnderReview);
         }
 
         [Fact]

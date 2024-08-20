@@ -13,25 +13,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{22F4190F-DF16-4B68-BBFA-871CB8C494A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Domain", "SupportDesk.Domain\SupportDesk.Domain.csproj", "{672E145E-FE26-4102-965A-83FA567DD3CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Domain", "SupportDesk.Domain\SupportDesk.Domain.csproj", "{672E145E-FE26-4102-965A-83FA567DD3CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Application", "SupportDesk.Application\SupportDesk.Application.csproj", "{1FE26CE6-947D-4F1C-8517-92684DC52BEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Application", "SupportDesk.Application\SupportDesk.Application.csproj", "{1FE26CE6-947D-4F1C-8517-92684DC52BEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Infrastructure", "SupportDesk.Infrastructure\SupportDesk.Infrastructure.csproj", "{22926A9D-88E0-4C2F-99EA-CE886AFE9694}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Infrastructure", "SupportDesk.Infrastructure\SupportDesk.Infrastructure.csproj", "{22926A9D-88E0-4C2F-99EA-CE886AFE9694}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Persistence", "SupportDesk.Persistence\SupportDesk.Persistence.csproj", "{F495645A-99D3-4B9B-BC0F-A149AA8B00D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Persistence", "SupportDesk.Persistence\SupportDesk.Persistence.csproj", "{F495645A-99D3-4B9B-BC0F-A149AA8B00D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Api", "SupportDesk.Api\SupportDesk.Api.csproj", "{1AD2AE55-7318-4268-93C9-0C78DCE2F6E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Api", "SupportDesk.Api\SupportDesk.Api.csproj", "{1AD2AE55-7318-4268-93C9-0C78DCE2F6E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Domain.UnitTests", "SupportDesk.Domain.UnitTests\SupportDesk.Domain.UnitTests.csproj", "{D80FC592-A358-4EDA-914F-082EE4508E38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Domain.UnitTests", "SupportDesk.Domain.UnitTests\SupportDesk.Domain.UnitTests.csproj", "{D80FC592-A358-4EDA-914F-082EE4508E38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Application.UnitTests", "SupportDesk.Application.UnitTests\SupportDesk.Application.UnitTests.csproj", "{5C8E347E-6484-49AE-9AD2-A0579F6ED375}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Application.UnitTests", "SupportDesk.Application.UnitTests\SupportDesk.Application.UnitTests.csproj", "{5C8E347E-6484-49AE-9AD2-A0579F6ED375}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Infrastructure.UnitTests", "SupportDesk.Infrastructure.UnitTests\SupportDesk.Infrastructure.UnitTests.csproj", "{9C5623B9-A674-45DB-A7F5-8CDDA7C3E2B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Infrastructure.UnitTests", "SupportDesk.Infrastructure.UnitTests\SupportDesk.Infrastructure.UnitTests.csproj", "{9C5623B9-A674-45DB-A7F5-8CDDA7C3E2B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Api.IntegrationTests", "SupportDesk.Api.IntegrationTests\SupportDesk.Api.IntegrationTests.csproj", "{222F4EAA-47B5-4D47-BB7D-5021D4BA8236}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Api.IntegrationTests", "SupportDesk.Api.IntegrationTests\SupportDesk.Api.IntegrationTests.csproj", "{222F4EAA-47B5-4D47-BB7D-5021D4BA8236}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportDesk.Persistence.IntegrationTests", "SupportDesk.Persistence.IntegrationTests\SupportDesk.Persistence.IntegrationTests.csproj", "{03B7E9A4-DF7B-44D1-8F44-7126DC3ABE37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportDesk.Persistence.IntegrationTests", "SupportDesk.Persistence.IntegrationTests\SupportDesk.Persistence.IntegrationTests.csproj", "{03B7E9A4-DF7B-44D1-8F44-7126DC3ABE37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2A890BEB-E0E0-403C-8D91-398B64E40C21}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
