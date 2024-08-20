@@ -35,7 +35,7 @@ namespace SupportDesk.Domain.UnitTests.Entities
             {
                 Id = Guid.NewGuid(),
                 FirstName = "Jane",
-                LastName = "Smith"
+                LastName = "Lopez"
             };
 
             var request = new Request

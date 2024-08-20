@@ -37,8 +37,8 @@ namespace SupportDesk.Domain.UnitTests.Entities
 
             var user = new User
             {
-                FirstName = "John",
-                LastName = "Doe",
+                FirstName = "Juan",
+                LastName = "Perez",
                 Gender = gender
             };
 
