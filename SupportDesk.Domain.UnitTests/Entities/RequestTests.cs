@@ -34,6 +34,7 @@ namespace SupportDesk.Domain.UnitTests.Entities
             var reviewer = new User
             {
                 Id = Guid.NewGuid(),
+                Email = "jane@example.com",
                 FirstName = "Jane",
                 LastName = "Lopez"
             };

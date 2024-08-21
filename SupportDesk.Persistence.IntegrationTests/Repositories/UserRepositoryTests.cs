@@ -21,6 +21,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             var user = new User
             {
                 Id = Guid.NewGuid(),
+                Email = "juan@example.com",
                 FirstName = "Juan",
                 LastName = "Perez",
                 BirthDate = new DateTime(1990, 1, 1),

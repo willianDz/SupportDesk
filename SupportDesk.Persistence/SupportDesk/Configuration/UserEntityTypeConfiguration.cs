@@ -14,6 +14,9 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
             builder.Property(u => u.Id)
                 .IsRequired();
 
+            builder.Property(u => u.Email)
+                .IsRequired();
+            
             builder.Property(u => u.FirstName)
                 .HasMaxLength(100)
                 .IsRequired();

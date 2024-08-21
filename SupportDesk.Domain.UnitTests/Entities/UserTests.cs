@@ -15,6 +15,7 @@ namespace SupportDesk.Domain.UnitTests.Entities
 
             // Assert
             user.Id.Should().BeEmpty();
+            user.Email.Should().BeEmpty();
             user.FirstName.Should().BeEmpty();
             user.LastName.Should().BeEmpty();
             user.BirthDate.Should().BeNull();
@@ -31,12 +32,13 @@ namespace SupportDesk.Domain.UnitTests.Entities
             var gender = new Gender
             {
                 GenderId = 1,
-                Description = "Male",
+                Description = "Masculino",
                 Abbreviation = "M"
             };
 
             var user = new User
             {
+                Email = "juan@example.com",
                 FirstName = "Juan",
                 LastName = "Perez",
                 Gender = gender
@@ -48,7 +50,7 @@ namespace SupportDesk.Domain.UnitTests.Entities
             // Assert
             assignedGender.Should().NotBeNull();
             assignedGender.Should().Be(gender);
-            assignedGender.Description.Should().Be("Male");
+            assignedGender.Description.Should().Be("Masculino");
         }
 
         [Fact]
