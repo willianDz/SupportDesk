@@ -19,8 +19,4 @@
     <ProjectReference Include="..\SupportDesk.Application\SupportDesk.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="SupportDesk\Repositories\" />
-  </ItemGroup>
-
 </Project>

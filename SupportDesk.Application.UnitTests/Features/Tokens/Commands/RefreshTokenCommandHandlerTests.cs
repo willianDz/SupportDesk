@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Xunit;
-using SupportDesk.Application.Features.Tokens.Commands;
 using SupportDesk.Application.Contracts.Infraestructure.Security;
+using SupportDesk.Application.Features.Tokens.Commands.RefreshToken;
 
 namespace SupportDesk.Application.UnitTests.Features.Tokens.Commands;
 
@@ -22,7 +22,7 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var command = new RefreshTokenCommand { Token = "validToken" };
 
-        _tokenGeneratorMock.Setup(tg => tg.RefreshToken("validToken"))
+        _tokenGeneratorMock.Setup(tg => tg.RefreshToken("validToken", CancellationToken.None))
                            .Returns("newValidToken");
 
         // Act
@@ -30,7 +30,9 @@ public class RefreshTokenCommandHandlerTests
 
         // Assert
         Assert.Equal("newValidToken", result);
-        _tokenGeneratorMock.Verify(tg => tg.RefreshToken("validToken"), Times.Once);
+
+        _tokenGeneratorMock
+            .Verify(tg => tg.RefreshToken("validToken", CancellationToken.None), Times.Once);
     }
 
     [Fact]
@@ -39,7 +41,7 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var command = new RefreshTokenCommand { Token = "invalidToken" };
 
-        _tokenGeneratorMock.Setup(tg => tg.RefreshToken("invalidToken"))
+        _tokenGeneratorMock.Setup(tg => tg.RefreshToken("invalidToken", CancellationToken.None))
                            .Returns((string?)null); // Simulate failure
 
         // Act
@@ -47,6 +49,7 @@ public class RefreshTokenCommandHandlerTests
 
         // Assert
         Assert.Null(result);
-        _tokenGeneratorMock.Verify(tg => tg.RefreshToken("invalidToken"), Times.Once);
+        _tokenGeneratorMock
+            .Verify(tg => tg.RefreshToken("invalidToken", CancellationToken.None), Times.Once);
     }
 }

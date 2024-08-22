@@ -1,41 +1,48 @@
-﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SupportDesk.Domain.Entities;
-using SupportDesk.Persistence.IntegrationTests.Helpers;
+using SupportDesk.Domain.Enums;
+using SupportDesk.Persistence.SupportDesk.Repositories;
+using SupportDesk.Persistence.SupportDesk;
 using Xunit;
 
 namespace SupportDesk.Persistence.IntegrationTests.Repositories
 {
     public class RequestRepositoryTests
     {
-        [Fact]
-        public async Task CanCreateRequestWithRequestType()
+        private readonly RequestRepository _repository;
+        private readonly ApplicationDbContext _dbContext;
+
+        public RequestRepositoryTests()
         {
-            using var context = DbContextHelper.CreateInMemoryDbContext();
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "SupportDeskDb")
+                .Options;
 
-            // Ensure there is at least one RequestType in the database
-            var requestType = await context.RequestTypes.FirstOrDefaultAsync(rt => rt.Description == "Tecnología de la información");
-            requestType.Should().NotBeNull();
+            _dbContext = new ApplicationDbContext(options);
+            _repository = new RequestRepository(_dbContext);
+        }
 
+        [Fact]
+        public async Task AddAsync_Should_Add_Request_To_Database()
+        {
+            // Arrange
             var request = new Request
             {
-                RequestTypeId = requestType!.RequestTypeId,
+                RequestTypeId = 1,
                 ZoneId = 1,
-                Comments = "This is a test request",
-                RequestStatusId = 1
+                Comments = "Test comments",
+                RequestStatusId = (int)RequestStatusesEnum.New
             };
 
-            // Create
-            await context.Requests.AddAsync(request);
-            await context.SaveChangesAsync();
+            // Act
+            await _repository.AddAsync(request);
 
-            // Read with include
-            var fetchedRequest = await context.Requests
-                .Include(r => r.RequestType)
-                .FirstOrDefaultAsync(r => r.Id == request.Id);
-
-            fetchedRequest.Should().NotBeNull();
-            fetchedRequest!.RequestType.Description.Should().Be("Tecnología de la información");
+            // Assert
+            var addedRequest = await _dbContext.Requests.FindAsync(request.Id);
+            Assert.NotNull(addedRequest);
+            Assert.Equal(request.RequestTypeId, addedRequest.RequestTypeId);
+            Assert.Equal(request.ZoneId, addedRequest.ZoneId);
+            Assert.Equal(request.Comments, addedRequest.Comments);
         }
     }
 

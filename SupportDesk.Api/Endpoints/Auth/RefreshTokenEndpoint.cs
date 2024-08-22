@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SupportDesk.Api.Auth;
-using SupportDesk.Application.Features.Tokens.Commands;
+using SupportDesk.Application.Features.Tokens.Commands.RefreshToken;
 
 namespace SupportDesk.Api.Endpoints.Auth;
 

@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Xunit;
 using SupportDesk.Application.Contracts.Infraestructure.Security;
-using SupportDesk.Application.Features.Tokens.Commands;
+using SupportDesk.Application.Features.Tokens.Commands.GenerateToken;
 
 namespace SupportDesk.Application.UnitTests.Features.Tokens.Commands;
 
@@ -27,7 +27,7 @@ public class GenerateTokenCommandHandlerTests
             IsAdmin = true
         };
 
-        _tokenGeneratorMock.Setup(tg => tg.GenerateToken(It.IsAny<TokenGenerationRequest>()))
+        _tokenGeneratorMock.Setup(tg => tg.GenerateToken(It.IsAny<TokenGenerationRequest>(), CancellationToken.None))
                            .Returns("generatedToken");
 
         // Act
@@ -35,9 +35,10 @@ public class GenerateTokenCommandHandlerTests
 
         // Assert
         Assert.Equal("generatedToken", result);
+
         _tokenGeneratorMock.Verify(tg => tg.GenerateToken(It.Is<TokenGenerationRequest>(
             r => r.UserId == command.UserId &&
                  r.Email == command.Email &&
-                 r.IsAdmin == command.IsAdmin)), Times.Once);
+                 r.IsAdmin == command.IsAdmin), CancellationToken.None), Times.Once);
     }
 }

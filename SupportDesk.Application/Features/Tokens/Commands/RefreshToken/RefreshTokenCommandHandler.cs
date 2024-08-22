@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SupportDesk.Application.Contracts.Infraestructure.Security;
 
-namespace SupportDesk.Application.Features.Tokens.Commands;
+namespace SupportDesk.Application.Features.Tokens.Commands.RefreshToken;
 
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, string?>
 {
@@ -12,9 +12,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, s
         _tokenGenerator = tokenGenerator;
     }
 
-    public Task<string?> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public Task<string?> Handle(
+        RefreshTokenCommand request, 
+        CancellationToken cancellationToken)
     {
-        var newToken = _tokenGenerator.RefreshToken(request.Token);
+        var newToken = _tokenGenerator.RefreshToken(request.Token, cancellationToken);
 
         return Task.FromResult(newToken);
     }

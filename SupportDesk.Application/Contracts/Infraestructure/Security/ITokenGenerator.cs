@@ -2,7 +2,11 @@
 
 public interface ITokenGenerator
 {
-    string GenerateToken(TokenGenerationRequest request);
+    string GenerateToken(
+        TokenGenerationRequest request, 
+        CancellationToken cancellationToken = default);
 
-    public string? RefreshToken(string token);
+    public string? RefreshToken(
+        string token,
+        CancellationToken cancellationToken = default);
 }

@@ -25,7 +25,9 @@ public class TokenGenerator : ITokenGenerator
         _audience = audience;
     }
 
-    public string GenerateToken(TokenGenerationRequest request)
+    public string GenerateToken(
+        TokenGenerationRequest request, 
+        CancellationToken cancellationToken = default)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_tokenSecret);
@@ -83,7 +85,9 @@ public class TokenGenerator : ITokenGenerator
         return jwt;
     }
 
-    public string? RefreshToken(string token)
+    public string? RefreshToken(
+        string token, 
+        CancellationToken cancellationToken = default)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_tokenSecret);

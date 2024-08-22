@@ -16,9 +16,7 @@ public static class StartupExtensions
     {
         builder.Services.AddApplicationServices();
         builder.Services.AddPersistenceServices(builder.Configuration);
-        builder.Services.AddInfrastructureServices(builder.Configuration);
-
-        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+        builder.Services.AddInfrastructureServices(builder.Configuration);       
 
         return builder.Build();
     }

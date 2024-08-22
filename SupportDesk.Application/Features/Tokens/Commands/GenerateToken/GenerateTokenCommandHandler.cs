@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SupportDesk.Application.Contracts.Infraestructure.Security;
 
-namespace SupportDesk.Application.Features.Tokens.Commands;
+namespace SupportDesk.Application.Features.Tokens.Commands.GenerateToken;
 
 public class GenerateTokenCommandHandler : IRequestHandler<GenerateTokenCommand, string>
 {
@@ -12,7 +12,9 @@ public class GenerateTokenCommandHandler : IRequestHandler<GenerateTokenCommand,
         _tokenGenerator = tokenGenerator;
     }
 
-    public Task<string> Handle(GenerateTokenCommand request, CancellationToken cancellationToken)
+    public Task<string> Handle(
+        GenerateTokenCommand request, 
+        CancellationToken cancellationToken)
     {
         var tokenRequest = new TokenGenerationRequest
         {
@@ -22,7 +24,7 @@ public class GenerateTokenCommandHandler : IRequestHandler<GenerateTokenCommand,
             CustomClaims = request.CustomClaims,
         };
 
-        var token = _tokenGenerator.GenerateToken(tokenRequest);
+        var token = _tokenGenerator.GenerateToken(tokenRequest, cancellationToken);
 
         return Task.FromResult(token);
     }

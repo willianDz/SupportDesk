@@ -17,5 +17,12 @@
 
             public const string RefreshToken = $"{Base}/refreshToken";
         }
+
+        public static class Requests
+        {
+            private const string Base = $"{ApiBase}/requests";
+
+            public const string CreateRequest = Base;
+        }
     }
 }

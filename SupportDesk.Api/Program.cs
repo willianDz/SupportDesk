@@ -1,29 +1,34 @@
 using Microsoft.Extensions.Options;
-using SupportDesk.Api;
 using SupportDesk.Api.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace SupportDesk.Api;
 
-builder.Services
-    .ConfigureAuthentication(builder.Configuration)
-    .AddAuthorization()
-    .ConfigureApiVersioning();
+public class Program
+{
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+        builder.Services
+            .ConfigureAuthentication(builder.Configuration)
+            .ConfigureAuthorization()
+            .ConfigureApiVersioning();
 
-builder.Services.ConfigureOutputCache();
-builder.Services.ConfigureHealthChecks();
+        // Add services to the container.
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddSwaggerGen(x => x.OperationFilter<SwaggerDefaultValues>());
+        builder.Services.ConfigureOutputCache();
+        builder.Services.ConfigureHealthChecks();
 
-var app = builder
-    .ConfigureServices()
-    .ConfigurePipeline();
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        builder.Services.AddSwaggerGen(x => x.OperationFilter<SwaggerDefaultValues>());
 
-app.Run();
+        var app = builder
+            .ConfigureServices()
+            .ConfigurePipeline();
 
-
+        app.Run();
+    }
+}
