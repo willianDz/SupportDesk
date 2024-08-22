@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportDesk.Application.Contracts.Infraestructure.FileStorage;
+using SupportDesk.Application.Contracts.Infraestructure.Notifications;
 using SupportDesk.Application.Contracts.Infraestructure.Security;
 using SupportDesk.Infrastructure.FileStorage;
+using SupportDesk.Infrastructure.Notifications;
 using SupportDesk.Infrastructure.Security;
 
 namespace SupportDesk.Infrastructure;
@@ -39,6 +41,7 @@ public static class InfrastructureServiceRegistration
             return new LocalFileStorageService(storagePath, baseUrl);
         });
 
+        services.AddTransient<INotificationService, SendGridNotificationService>();
 
         return services;
     }
