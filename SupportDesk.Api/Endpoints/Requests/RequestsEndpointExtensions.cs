@@ -6,6 +6,7 @@ public static class RequestsEndpointExtensions
     {
         app.MapCreateRequest();
         app.MapUpdateRequest();
+        app.MapInactivateRequest();
 
         return app;
     }

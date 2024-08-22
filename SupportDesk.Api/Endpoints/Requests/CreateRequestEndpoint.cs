@@ -29,7 +29,11 @@ public static class CreateRequestEndpoint
 
                 if (!response.Success)
                 {
-                    return Results.BadRequest(new { response.ValidationErrors });
+                    return Results.BadRequest(new
+                    {
+                        response.Message,
+                        response.ValidationErrors
+                    });
                 }
 
                 return Results.Ok(response);

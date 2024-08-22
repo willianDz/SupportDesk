@@ -1,18 +1,18 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SupportDesk.Api.Auth;
-using SupportDesk.Application.Features.Requests.Commands.UpdateRequest;
+using SupportDesk.Application.Features.Requests.Commands.InactivateRequest;
 
 namespace SupportDesk.Api.Endpoints.Requests;
 
-public static class UpdateRequestEndpoint
+public static class InactivateRequestEndpoint
 {
-    public const string Name = "UpdateRequest";
+    public const string Name = "InactivateRequest";
 
-    public static IEndpointRouteBuilder MapUpdateRequest(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapInactivateRequest(this IEndpointRouteBuilder app)
     {
-        app.MapPut(ApiEndpoints.Requests.UpdateRequest, async (
-            [FromForm] UpdateRequestCommand command,
+        app.MapDelete(ApiEndpoints.Requests.InactivateRequest, async (
+            [FromQuery] int requestId,
             IMediator mediator,
             HttpContext httpContext,
             CancellationToken token) =>
@@ -23,23 +23,27 @@ public static class UpdateRequestEndpoint
                 return Results.Unauthorized();
             }
 
-            command.UserId = userId.Value;
+            var command = new InactivateRequestCommand
+            {
+                RequestId = requestId,
+                UserId = userId.Value
+            };
 
             var response = await mediator.Send(command, cancellationToken: token);
 
             if (!response.Success)
             {
-                return Results.BadRequest(new
-                {
-                    response.Message,
-                    response.ValidationErrors
+                return Results.BadRequest(new 
+                { 
+                    response.Message, 
+                    response.ValidationErrors 
                 });
             }
 
             return Results.Ok(response);
         })
             .WithName(Name)
-            .Produces<UpdateRequestCommandResponse>(StatusCodes.Status200OK)
+            .Produces<InactivateRequestCommandResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AuthConstants.TrustedMemberPolicyName);

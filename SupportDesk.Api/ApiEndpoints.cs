@@ -24,6 +24,7 @@
 
             public const string CreateRequest = Base;
             public const string UpdateRequest = Base;
+            public const string InactivateRequest = Base;
         }
     }
 }

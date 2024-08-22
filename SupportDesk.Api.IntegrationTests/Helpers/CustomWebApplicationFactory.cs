@@ -90,6 +90,21 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
             context.Users.Add(testUser);
             context.SaveChanges();
 
+            var testRequest = new Request()
+            {
+                Id = 1,
+                RequestTypeId = 1,
+                ZoneId = 1,
+                RequestStatusId = 1,
+                IsActive = true,
+                Comments = "Valid test comments.",
+                CreatedBy = testUser.Id,
+                CreatedDate = DateTime.UtcNow,
+            };
+
+            context.Requests.Add(testRequest);
+            context.SaveChanges();
+
             return testUser;
         }
 
