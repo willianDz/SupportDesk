@@ -16,9 +16,9 @@ public class RequestValidationService : IRequestValidationService
     }
 
     public async Task<bool> ValidateUserCanProcessRequestAsync(
-        Request request, 
-        Guid userId, 
-        int newStatusId, 
+        Request request,
+        Guid userId,
+        int newStatusId,
         CancellationToken cancellationToken = default)
     {
         if (!request.IsActive)
@@ -44,19 +44,42 @@ public class RequestValidationService : IRequestValidationService
         }
 
         var hasZonePermission = user.UserZones?.Any(uz => uz.ZoneId == request.ZoneId);
-        
+
         if (hasZonePermission != null && !hasZonePermission.Value)
         {
             throw new InvalidOperationException(RequestMessages.UserNoZonePermission);
         }
 
         var hasRequestTypePermission = user.UserRequestTypes?.Any(urt => urt.RequestTypeId == request.RequestTypeId);
-        
+
         if (hasRequestTypePermission != null && !hasRequestTypePermission.Value)
         {
             throw new InvalidOperationException(RequestMessages.UserNoRequestTypePermission);
         }
 
         return true;
+    }
+
+    public Task<bool> ValidateUserCanUpdateHisRequestAsync(
+        Request request,
+        int newRequestTypeId,
+        int newZoneId,
+        CancellationToken cancellationToken = default)
+    {
+        // Validar que no se pueda actualizar si está en estado Aprobado o Rechazado
+        if (request.RequestStatusId == (int)RequestStatusesEnum.Approved ||
+            request.RequestStatusId == (int)RequestStatusesEnum.Rejected)
+        {
+            throw new InvalidOperationException(RequestMessages.RequestAlreadyProccessed);
+        }
+
+        // Validar que no se pueda actualizar el tipo de solicitud o zona si está en estado En Revision
+        if (request.RequestStatusId == (int)RequestStatusesEnum.UnderReview &&
+            (request.RequestTypeId != newRequestTypeId || request.ZoneId != newZoneId))
+        {
+            throw new InvalidOperationException(RequestMessages.CannotUpdateRequestTypeOrZone);
+        }
+
+        return Task.FromResult(true);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SupportDesk.Application.Constants;
 
 namespace SupportDesk.Application.Features.Requests.Commands.InactivateRequest;
 
@@ -6,7 +7,7 @@ public class InactivateRequestCommandValidator : AbstractValidator<InactivateReq
 {
     public InactivateRequestCommandValidator()
     {
-        RuleFor(x => x.RequestId).GreaterThan(0).WithMessage("Solicitud ID Inválida.");
-        RuleFor(x => x.UserId).NotEmpty().WithMessage("Usuario inválido.");
+        RuleFor(x => x.RequestId).GreaterThan(0).WithMessage(RequestMessages.InvalidRequestId);
+        RuleFor(x => x.UserId).NotEmpty().WithMessage(RequestMessages.InvalidUser);
     }
 }

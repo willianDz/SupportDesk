@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SupportDesk.Api.IntegrationTests.Helpers;
+using SupportDesk.Application.Constants;
 using SupportDesk.Application.Features.Requests.Commands.InactivateRequest;
 using System.Net.Http.Headers;
 using Xunit;
@@ -33,7 +34,7 @@ public class InactivateRequestEndpointTests : IClassFixture<CustomWebApplication
 
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.Equal("La solicitud ha sido inactivada exitosamente.", result.Message);
+        Assert.Equal(RequestMessages.RequestHasBeenInactive, result.Message);
     }
 
     [Fact]
@@ -53,6 +54,6 @@ public class InactivateRequestEndpointTests : IClassFixture<CustomWebApplication
         var result = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
 
         Assert.NotNull(result);
-        Assert.Equal("La solicitud no existe o está inactiva.", (string)result.message);
+        Assert.Equal(RequestMessages.RequestNotFoundOrIsInactive, (string)result.message);
     }
 }

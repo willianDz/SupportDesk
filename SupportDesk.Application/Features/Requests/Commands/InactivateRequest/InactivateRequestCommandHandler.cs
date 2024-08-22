@@ -1,7 +1,6 @@
 ﻿using MediatR;
+using SupportDesk.Application.Constants;
 using SupportDesk.Application.Contracts.Persistence;
-using SupportDesk.Application.Responses;
-using SupportDesk.Domain.Entities;
 
 namespace SupportDesk.Application.Features.Requests.Commands.InactivateRequest;
 
@@ -25,7 +24,7 @@ public class InactivateRequestCommandHandler : IRequestHandler<InactivateRequest
         if (requestToInactivate == null || !requestToInactivate.IsActive)
         {
             response.Success = false;
-            response.Message = "La solicitud no existe o está inactiva.";
+            response.Message = RequestMessages.RequestNotFoundOrIsInactive;
             return response;
         }
 
@@ -35,7 +34,7 @@ public class InactivateRequestCommandHandler : IRequestHandler<InactivateRequest
 
         await _requestRepository.UpdateAsync(requestToInactivate, cancellationToken);
 
-        response.Message = "La solicitud ha sido inactivada exitosamente.";
+        response.Message = RequestMessages.RequestHasBeenInactive;
 
         return response;
     }

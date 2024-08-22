@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
+using SupportDesk.Application.Constants;
 using SupportDesk.Application.Contracts.Infraestructure.FileStorage;
 using SupportDesk.Application.Contracts.Persistence;
+using SupportDesk.Application.Contracts.Services;
 using SupportDesk.Application.Models.Dtos;
 using SupportDesk.Domain.Entities;
 using SupportDesk.Domain.Enums;
@@ -11,15 +13,18 @@ namespace SupportDesk.Application.Features.Requests.Commands.UpdateRequest;
 public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand, UpdateRequestCommandResponse>
 {
     private readonly IRequestRepository _requestRepository;
+    private readonly IRequestValidationService _validationService;
     private readonly IFileStorageService _fileStorageService;
     private readonly IMapper _mapper;
 
     public UpdateRequestCommandHandler(
         IRequestRepository requestRepository,
+        IRequestValidationService validationService,
         IFileStorageService fileStorageService,
         IMapper mapper)
     {
         _requestRepository = requestRepository;
+        _validationService = validationService;
         _fileStorageService = fileStorageService;
         _mapper = mapper;
     }
@@ -35,25 +40,23 @@ public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand,
         if (requestToUpdate == null || !requestToUpdate.IsActive)
         {
             response.Success = false;
-            response.Message = "La solicitud no existe o está inactiva.";
+            response.Message = RequestMessages.RequestNotFoundOrIsInactive;
             return response;
         }
 
-        // Validar que no se pueda actualizar si está en estado Aprobado o Rechazado
-        if (requestToUpdate.RequestStatusId == (int)RequestStatusesEnum.Approved ||
-            requestToUpdate.RequestStatusId == (int)RequestStatusesEnum.Rejected)
+        // Validar las reglas de negocio usando el servicio de validación.
+        try
         {
-            response.Success = false;
-            response.Message = "No se puede actualizar una solicitud que ya ha sido procesada.";
-            return response;
+            await _validationService.ValidateUserCanUpdateHisRequestAsync(
+                requestToUpdate, 
+                request.RequestTypeId, 
+                request.ZoneId, 
+                cancellationToken);
         }
-
-        // Validar que no se pueda actualizar el tipo de solicitud o zona si está en estado En Revision
-        if (requestToUpdate.RequestStatusId == (int)RequestStatusesEnum.UnderReview &&
-            (requestToUpdate.RequestTypeId != request.RequestTypeId || requestToUpdate.ZoneId != request.ZoneId))
+        catch (InvalidOperationException ex)
         {
             response.Success = false;
-            response.Message = "No se puede actualizar el tipo de solicitud o zona cuando la solicitud ya se encuentra en revisión.";
+            response.Message = ex.Message;
             return response;
         }
 
@@ -101,7 +104,7 @@ public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand,
         await _requestRepository.UpdateAsync(requestToUpdate, cancellationToken);
 
         response.RequestUpdated = _mapper.Map<RequestDto>(requestToUpdate);
-        response.Message = "Solicitud actualizada exitosamente.";
+        response.Message = RequestMessages.RequestHasBeenUpdated;
         return response;
     }
 }

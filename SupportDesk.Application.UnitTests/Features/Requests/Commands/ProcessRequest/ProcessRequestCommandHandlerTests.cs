@@ -4,7 +4,6 @@ using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Application.Contracts.Services;
 using SupportDesk.Application.Features.Requests.Commands.ProcessRequest;
 using SupportDesk.Application.Models.Dtos;
-using SupportDesk.Application.Services;
 using SupportDesk.Application.Constants;
 using SupportDesk.Domain.Entities;
 using SupportDesk.Domain.Enums;

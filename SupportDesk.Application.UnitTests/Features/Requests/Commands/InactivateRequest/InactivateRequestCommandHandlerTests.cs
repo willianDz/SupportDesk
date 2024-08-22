@@ -3,6 +3,7 @@ using SupportDesk.Application.Contracts.Persistence;
 using Xunit;
 using SupportDesk.Domain.Entities;
 using SupportDesk.Application.Features.Requests.Commands.InactivateRequest;
+using SupportDesk.Application.Constants;
 
 namespace SupportDesk.Application.UnitTests.Features.Requests.Commands.InactivateRequest;
 
@@ -42,7 +43,7 @@ public class InactivateRequestCommandHandlerTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal("La solicitud no existe o está inactiva.", result.Message);
+        Assert.Equal(RequestMessages.RequestNotFoundOrIsInactive, result.Message);
         _requestRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Request>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 

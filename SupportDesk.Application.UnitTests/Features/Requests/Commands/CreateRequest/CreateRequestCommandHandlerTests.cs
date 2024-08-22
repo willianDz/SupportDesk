@@ -8,6 +8,7 @@ using SupportDesk.Application.Models.Dtos;
 using SupportDesk.Domain.Enums;
 using SupportDesk.Application.Contracts.Infraestructure.FileStorage;
 using Microsoft.AspNetCore.Http;
+using SupportDesk.Application.Constants;
 
 namespace SupportDesk.Application.UnitTests.Features.Requests.Commands.CreateRequest;
 
@@ -84,9 +85,9 @@ public class CreateRequestCommandHandlerTests
         Assert.False(result.Success);
         Assert.NotNull(result.ValidationErrors);
         Assert.NotEmpty(result.ValidationErrors);
-        Assert.Contains(result.ValidationErrors, e => e.Contains("Tipo de solicitud inválida"));
-        Assert.Contains(result.ValidationErrors, e => e.Contains("Zona inválida"));
-        Assert.Contains(result.ValidationErrors, e => e.Contains("Los comentarios deben tener al menos 15 caracteres."));
+        Assert.Contains(result.ValidationErrors, e => e.Contains(RequestMessages.InvalidRequestType));
+        Assert.Contains(result.ValidationErrors, e => e.Contains(RequestMessages.InvalidZone));
+        Assert.Contains(result.ValidationErrors, e => e.Contains(RequestMessages.CommentsMinLenght));
     }
 
     [Fact]
