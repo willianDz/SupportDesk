@@ -4,6 +4,9 @@ namespace SupportDesk.Application.Contracts.Infraestructure.FileStorage
 {
     public interface IFileStorageService
     {
-        Task<List<string>> UploadFilesAsync(List<IFormFile> files, string containerName);
+        Task<List<string>> UploadFilesAsync(
+            List<IFormFile> files, 
+            string containerName,
+            CancellationToken cancellationToken = default);
     }
 }

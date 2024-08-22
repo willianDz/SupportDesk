@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using SupportDesk.Application.Contracts.Infraestructure.Security;
 using SupportDesk.Domain.Entities;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace SupportDesk.Api.IntegrationTests.Helpers
 {
@@ -48,6 +51,28 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
                 // Generar un JWT para el usuario de prueba.
                 var tokenGenerator = scopedServices.GetRequiredService<ITokenGenerator>();
                 TestJwtToken = GenerateJwtToken(testUser, tokenGenerator);
+
+                // Crear la carpeta FileStorage si no existe
+                var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
+                if (!Directory.Exists(storagePath))
+                {
+                    Directory.CreateDirectory(storagePath);
+                }
+
+                // Desactivar CSRF en el contexto de las pruebas
+                services.AddAntiforgery(options => options.Cookie.Name = "Test-Antiforgery-Cookie");
+                services.Configure<Microsoft.AspNetCore.Antiforgery.AntiforgeryOptions>(options =>
+                {
+                    options.SuppressXFrameOptionsHeader = true;
+                });
+            });
+
+
+            builder.ConfigureTestServices(services =>
+            {
+                services.AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
+
+                services.RemoveAll<IAntiforgery>();
             });
         }
 

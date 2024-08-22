@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using SupportDesk.Application.Contracts.Infraestructure.FileStorage;
 using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Application.Models.Dtos;
 using SupportDesk.Domain.Entities;
@@ -10,13 +11,16 @@ namespace SupportDesk.Application.Features.Requests.Commands.CreateRequest;
 public class CreateRequestCommandHandler : IRequestHandler<CreateRequestCommand, CreateRequestCommandResponse>
 {
     private readonly IRequestRepository _requestRepository;
+    private readonly IFileStorageService _fileStorageService;
     private readonly IMapper _mapper;
 
     public CreateRequestCommandHandler(
-        IRequestRepository requestRepository, 
+        IRequestRepository requestRepository,
+        IFileStorageService fileStorageService,
         IMapper mapper)
     {
         _requestRepository = requestRepository;
+        _fileStorageService = fileStorageService;
         _mapper = mapper;
     }
 
@@ -33,6 +37,14 @@ public class CreateRequestCommandHandler : IRequestHandler<CreateRequestCommand,
             return response;
         }
 
+        var documentUrls = new List<string>();
+
+        if (request.Documents != null && request.Documents.Any())
+        {
+            documentUrls = await _fileStorageService
+                .UploadFilesAsync(request.Documents, "requests", cancellationToken);
+        }
+
         var newRequest = new Request
         {
             RequestTypeId = request.RequestTypeId,
@@ -40,7 +52,14 @@ public class CreateRequestCommandHandler : IRequestHandler<CreateRequestCommand,
             Comments = request.Comments,
             RequestStatusId = (int)RequestStatusesEnum.New,
             CreatedBy = request.UserId,
-            CreatedDate = DateTime.UtcNow
+            CreatedDate = DateTime.UtcNow,
+            RequestDocuments = documentUrls.Select(url => new RequestDocument
+            {
+                DocumentUrl = url,
+                CreatedBy = request.UserId,
+                CreatedDate = DateTime.UtcNow,
+                IsActive = true,
+            }).ToList()
         };
 
         newRequest = await _requestRepository.AddAsync(newRequest, cancellationToken);

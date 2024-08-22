@@ -14,7 +14,10 @@ public class LocalFileStorageService : IFileStorageService
         _baseUrl = baseUrl;
     }
 
-    public async Task<List<string>> UploadFilesAsync(List<IFormFile> files, string containerName)
+    public async Task<List<string>> UploadFilesAsync(
+        List<IFormFile> files, 
+        string containerName,
+        CancellationToken cancellationToken = default)
     {
         var urls = new List<string>();
 
@@ -31,7 +34,7 @@ public class LocalFileStorageService : IFileStorageService
 
                 // Guardar el archivo en el sistema de archivos
                 using var stream = new FileStream(filePath, FileMode.Create);
-                await file.CopyToAsync(stream);
+                await file.CopyToAsync(stream, cancellationToken);
 
                 // Generar la URL pública para acceder al archivo
                 var fileUrl = $"{_baseUrl}{containerName}/{uniqueFileName}";

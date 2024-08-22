@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SupportDesk.Api.Auth;
 using SupportDesk.Application.Features.Requests.Commands.CreateRequest;
 
@@ -11,7 +12,7 @@ public static class CreateRequestEndpoint
     public static IEndpointRouteBuilder MapCreateRequest(this IEndpointRouteBuilder app)
     {
         app.MapPost(ApiEndpoints.Requests.CreateRequest, async (
-            CreateRequestCommand command,
+            [FromForm] CreateRequestCommand command,
             IMediator mediator,
             HttpContext httpContext,
             CancellationToken token) =>
