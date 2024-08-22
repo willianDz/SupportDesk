@@ -8,6 +8,7 @@ using SupportDesk.Api.Auth;
 using Asp.Versioning;
 using SupportDesk.Api.Endpoints;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json.Serialization;
 
 namespace SupportDesk.Api;
 
@@ -18,6 +19,8 @@ public static class StartupExtensions
         builder.Services.AddApplicationServices();
         builder.Services.AddPersistenceServices(builder.Configuration);
         builder.Services.AddInfrastructureServices(builder.Configuration);
+
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
         return builder.Build();
     }

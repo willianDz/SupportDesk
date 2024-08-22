@@ -15,6 +15,26 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
     {
         public string TestJwtToken { get; private set; } = string.Empty;
 
+        public string TestAdminJwtToken { get; private set; } = string.Empty;
+
+        private readonly User _testUser = new()
+        {
+            Id = Guid.NewGuid(),
+            Email = "testuser@test.com",
+            FirstName = "Test",
+            LastName = "User",
+            CreatedDate = DateTime.UtcNow
+        };
+
+        private readonly User _testAdminUser = new()
+        {
+            Id = Guid.NewGuid(),
+            Email = "testadinuser@test.com",
+            FirstName = "User",
+            LastName = "Admin",
+            CreatedDate = DateTime.UtcNow
+        };
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -46,11 +66,13 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
                 db.Database.EnsureCreated();
 
                 // Sembrar datos de prueba, incluyendo el usuario de prueba.
-                var testUser = SeedTestData(db);
+                SeedTestData(db);
 
-                // Generar un JWT para el usuario de prueba.
+                // Generar un JWT para los usuarios de prueba.
                 var tokenGenerator = scopedServices.GetRequiredService<ITokenGenerator>();
-                TestJwtToken = GenerateJwtToken(testUser, tokenGenerator);
+                TestJwtToken = GenerateJwtToken(_testUser, false, tokenGenerator);
+
+                TestAdminJwtToken = GenerateJwtToken(_testAdminUser, true, tokenGenerator);
 
                 // Crear la carpeta FileStorage si no existe
                 var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
@@ -76,18 +98,12 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
             });
         }
 
-        private User SeedTestData(ApplicationDbContext context)
+        private void SeedTestData(ApplicationDbContext context)
         {
-            var testUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Email = "testuser@test.com",
-                FirstName = "Test",
-                LastName = "User",
-                CreatedDate = DateTime.UtcNow
-            };
+            context.Users.Add(_testUser);
 
-            context.Users.Add(testUser);
+            context.Users.Add(_testAdminUser);
+
             context.SaveChanges();
 
             var testRequest = new Request()
@@ -98,23 +114,21 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
                 RequestStatusId = 1,
                 IsActive = true,
                 Comments = "Valid test comments.",
-                CreatedBy = testUser.Id,
+                CreatedBy = _testUser.Id,
                 CreatedDate = DateTime.UtcNow,
             };
 
             context.Requests.Add(testRequest);
             context.SaveChanges();
-
-            return testUser;
         }
 
-        private string GenerateJwtToken(User user, ITokenGenerator tokenGenerator)
+        private string GenerateJwtToken(User user, bool esAdmin, ITokenGenerator tokenGenerator)
         {
             var tokenRequest = new TokenGenerationRequest
             {
                 UserId = user.Id,
                 Email = user.Email,
-                IsAdmin = false
+                IsAdmin = esAdmin
             };
 
             return tokenGenerator.GenerateToken(tokenRequest);

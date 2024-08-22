@@ -38,7 +38,7 @@ public class TokenGenerator : ITokenGenerator
             new(JwtRegisteredClaimNames.Sub, request.Email),
             new(JwtRegisteredClaimNames.Email, request.Email),
             new("userid", request.UserId.ToString()),
-            new("isadmin", request.IsAdmin.ToString()),
+            new("isadmin", request.IsAdmin.ToString().ToLower()),
             new("trusted_member", "true"),
         };
 

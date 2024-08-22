@@ -119,7 +119,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
         public async Task GetUserRequestsAsync_Should_Return_Empty_If_No_Match()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = _testUserId;
             var requestTypeId = 99; // non-existent request type
             var statusId = 99; // non-existent status
             var createdFrom = DateTime.UtcNow.AddDays(-3);

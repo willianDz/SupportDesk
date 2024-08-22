@@ -24,7 +24,8 @@
 
             public const string CreateRequest = Base;
             public const string UpdateRequest = Base;
-            public const string InactivateRequest = Base;            
+            public const string InactivateRequest = Base;
+            public const string ProcessRequest = $"{Base}/process";
         }
 
         public static class Users

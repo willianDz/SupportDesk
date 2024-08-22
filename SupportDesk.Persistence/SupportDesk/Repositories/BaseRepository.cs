@@ -21,6 +21,15 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
             return t;
         }
 
+        public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            T? t = await _dbContext
+                .Set<T>()
+                .FindAsync(id, cancellationToken);
+
+            return t;
+        }
+
         public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             return await _dbContext.Set<T>().ToListAsync(cancellationToken);

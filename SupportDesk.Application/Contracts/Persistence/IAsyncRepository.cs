@@ -3,6 +3,8 @@
 public interface IAsyncRepository<T> where T : class
 {
     Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    
+    Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default);
 

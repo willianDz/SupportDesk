@@ -47,7 +47,7 @@ namespace SupportDesk.Application.UnitTests.Features.Users.Requests.Queries
 
             _requestRepositoryMock
                 .Setup(repo => repo.GetUserRequestsAsync(
-                    query.UserId,
+                    query.UserId!.Value,
                     query.RequestTypeId,
                     query.StatusId,
                     query.CreatedFrom,

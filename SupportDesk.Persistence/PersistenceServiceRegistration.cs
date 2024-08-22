@@ -18,6 +18,7 @@ namespace SupportDesk.Persistence
 
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IRequestRepository, RequestRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }
