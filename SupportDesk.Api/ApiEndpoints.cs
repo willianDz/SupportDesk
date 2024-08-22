@@ -23,6 +23,7 @@
             private const string Base = $"{ApiBase}/requests";
 
             public const string CreateRequest = Base;
+            public const string UpdateRequest = Base;
         }
     }
 }
