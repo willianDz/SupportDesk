@@ -13,7 +13,6 @@
   <ItemGroup>
     <Folder Include="Enum\" />
     <Folder Include="Exceptions\" />
-    <Folder Include="Features\Requests\Queries\" />
     <Folder Include="Features\Users\Profile\" />
   </ItemGroup>
 

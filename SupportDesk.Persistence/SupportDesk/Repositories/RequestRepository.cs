@@ -10,6 +10,17 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
         {
         }
 
+        override
+        public async Task<Request?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Requests
+                .Include(r => r.RequestType)
+                .Include(r => r.Zone)
+                .Include(r => r.ReviewerUser)
+                .Include(r => r.RequestDocuments)
+                .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+        }
+
         public async Task<(IReadOnlyList<Request> Requests, int TotalCount)> GetUserRequestsAsync(
         Guid userId,
         int? requestTypeId,

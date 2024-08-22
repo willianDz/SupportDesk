@@ -22,7 +22,6 @@
         public const string RequestAlreadyProccessed = "No se puede actualizar una solicitud que ya ha sido procesada.";
         public const string CannotUpdateRequestTypeOrZone = "No se puede actualizar una solicitud que ya ha sido procesada.";
         public const string RequestHasBeenUpdated = "No se puede actualizar una solicitud que ya ha sido procesada.";
-
-
+        public const string RequestIsInactive = "La solicitud fue inactivada.";
     }
 }

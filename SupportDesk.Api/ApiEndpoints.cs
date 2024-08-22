@@ -26,6 +26,7 @@
             public const string UpdateRequest = Base;
             public const string InactivateRequest = Base;
             public const string ProcessRequest = $"{Base}/process";
+            public const string GetRequestById = $"{Base}/{{id:int}}";
         }
 
         public static class Users

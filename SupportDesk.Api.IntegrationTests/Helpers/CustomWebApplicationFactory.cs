@@ -8,6 +8,8 @@ using SupportDesk.Domain.Entities;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.Xml.Linq;
 
 namespace SupportDesk.Api.IntegrationTests.Helpers
 {
@@ -106,19 +108,33 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
 
             context.SaveChanges();
 
-            var testRequest = new Request()
-            {
-                Id = 1,
-                RequestTypeId = 1,
-                ZoneId = 1,
-                RequestStatusId = 1,
-                IsActive = true,
-                Comments = "Valid test comments.",
-                CreatedBy = _testUser.Id,
-                CreatedDate = DateTime.UtcNow,
-            };
 
-            context.Requests.Add(testRequest);
+            context.Requests.AddRange(new List<Request>()
+            {
+                new Request
+                {
+                    Id = 1,
+                    RequestTypeId = 1,
+                    ZoneId = 1,
+                    RequestStatusId = 1,
+                    IsActive = true,
+                    Comments = "Valid test comments.",
+                    CreatedBy = _testUser.Id,
+                    CreatedDate = DateTime.UtcNow,
+                },
+
+                new Request
+                {
+                    Id = 2,
+                    RequestTypeId = 1,
+                    ZoneId = 1,
+                    RequestStatusId = 1,
+                    IsActive = false,
+                    Comments = "Inactive request test comments.",
+                    CreatedBy = _testUser.Id,
+                    CreatedDate = DateTime.UtcNow,
+                },
+            });
             context.SaveChanges();
         }
 
