@@ -7,6 +7,7 @@ using System.Text;
 using SupportDesk.Api.Auth;
 using Asp.Versioning;
 using SupportDesk.Api.Endpoints;
+using Microsoft.Extensions.FileProviders;
 
 namespace SupportDesk.Api;
 
@@ -16,7 +17,7 @@ public static class StartupExtensions
     {
         builder.Services.AddApplicationServices();
         builder.Services.AddPersistenceServices(builder.Configuration);
-        builder.Services.AddInfrastructureServices(builder.Configuration);       
+        builder.Services.AddInfrastructureServices(builder.Configuration);
 
         return builder.Build();
     }
@@ -38,6 +39,13 @@ public static class StartupExtensions
                 }
             });
         }
+
+        // Configurar la ruta para servir archivos estáticos
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "FileStorage")),
+            RequestPath = "/files"
+        });
 
         app.MapHealthChecks("hc");
         app.UseHttpsRedirection();
