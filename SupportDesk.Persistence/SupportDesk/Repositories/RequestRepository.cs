@@ -21,7 +21,7 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
         CancellationToken cancellationToken = default)
         {
             var queryable = _dbContext.Requests
-                .Where(r => r.ReviewerUserId == userId);
+                .Where(r => r.CreatedBy == userId);
 
             // Aplicar filtros
             if (requestTypeId.HasValue)
@@ -36,12 +36,12 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
 
             if (createdFrom.HasValue)
             {
-                queryable = queryable.Where(r => r.CreatedDate >= createdFrom.Value);
+                queryable = queryable.Where(r => r.CreatedDate.Date >= createdFrom.Value.Date);
             }
 
             if (createdTo.HasValue)
             {
-                queryable = queryable.Where(r => r.CreatedDate <= createdTo.Value);
+                queryable = queryable.Where(r => r.CreatedDate.Date <= createdTo.Value.Date);
             }
 
             // Obtener el total antes de aplicar paginación

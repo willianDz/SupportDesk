@@ -4,6 +4,7 @@ using SupportDesk.Domain.Enums;
 using SupportDesk.Persistence.SupportDesk.Repositories;
 using SupportDesk.Persistence.SupportDesk;
 using Xunit;
+using Shouldly;
 
 namespace SupportDesk.Persistence.IntegrationTests.Repositories
 {
@@ -11,6 +12,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
     {
         private readonly RequestRepository _repository;
         private readonly ApplicationDbContext _dbContext;
+        private readonly Guid _testUserId;
 
         public RequestRepositoryTests()
         {
@@ -20,6 +22,45 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
 
             _dbContext = new ApplicationDbContext(options);
             _repository = new RequestRepository(_dbContext);
+            _testUserId = Guid.NewGuid();
+
+            SeedDatabase();
+        }
+
+        private void SeedDatabase()
+        {
+            // Seed the database with test data
+            _dbContext.Requests.AddRange(
+                new Request
+                {
+                    RequestTypeId = 1,
+                    ZoneId = 1,
+                    Comments = "Valid Comment for Request 1",
+                    RequestStatusId = 1,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = _testUserId,
+                },
+                new Request
+                {
+                    RequestTypeId = 1,
+                    ZoneId = 2,
+                    Comments = "Valid Comment for Request 2",
+                    RequestStatusId = 2,
+                    CreatedDate = DateTime.UtcNow.AddDays(-1),
+                    CreatedBy = _testUserId,
+                },
+                new Request
+                {
+                    RequestTypeId = 2,
+                    ZoneId = 1,
+                    Comments = "Valid Comment for Request 3",
+                    RequestStatusId = 3,
+                    CreatedDate = DateTime.UtcNow.AddDays(-2),
+                    CreatedBy = _testUserId,
+                }
+            );
+
+            _dbContext.SaveChanges();
         }
 
         [Fact]
@@ -43,6 +84,62 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             Assert.Equal(request.RequestTypeId, addedRequest.RequestTypeId);
             Assert.Equal(request.ZoneId, addedRequest.ZoneId);
             Assert.Equal(request.Comments, addedRequest.Comments);
+        }
+
+        [Fact]
+        public async Task GetUserRequestsAsync_Should_Return_Requests_With_Pagination_And_Filters()
+        {
+            // Arrange
+            var userId = _testUserId;
+            var requestTypeId = 1;
+            var statusId = 1;
+            var createdFrom = DateTime.UtcNow.AddDays(-3);
+            var createdTo = DateTime.UtcNow.AddDays(1);
+            int page = 1;
+            int pageSize = 10;
+
+            // Act
+            var (requests, totalCount) = await _repository.GetUserRequestsAsync(
+                userId,
+                requestTypeId,
+                statusId,
+                createdFrom,
+                createdTo,
+                page,
+                pageSize);
+
+            // Assert
+            requests.ShouldNotBeEmpty();
+            requests.Count.ShouldBe(1);
+            totalCount.ShouldBe(1);
+            requests[0].Comments.ShouldBe("Valid Comment for Request 1");
+        }
+
+        [Fact]
+        public async Task GetUserRequestsAsync_Should_Return_Empty_If_No_Match()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var requestTypeId = 99; // non-existent request type
+            var statusId = 99; // non-existent status
+            var createdFrom = DateTime.UtcNow.AddDays(-3);
+            var createdTo = DateTime.UtcNow.AddDays(1);
+            int page = 1;
+            int pageSize = 10;
+
+            // Act
+            var (requests, totalCount) = await _repository.GetUserRequestsAsync(
+                userId,
+                requestTypeId,
+                statusId,
+                createdFrom,
+                createdTo,
+                page,
+                pageSize);
+
+            // Assert
+            requests.ShouldBeEmpty();
+            totalCount.ShouldBe(0);
         }
     }
 
