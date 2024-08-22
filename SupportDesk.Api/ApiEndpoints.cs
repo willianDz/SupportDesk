@@ -24,7 +24,14 @@
 
             public const string CreateRequest = Base;
             public const string UpdateRequest = Base;
-            public const string InactivateRequest = Base;
+            public const string InactivateRequest = Base;            
+        }
+
+        public static class Users
+        {
+            private const string Base = $"{ApiBase}/users";
+
+            public const string GetMyRequests = $"{Base}/me/requests";
         }
     }
 }

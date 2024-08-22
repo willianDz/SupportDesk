@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SupportDesk.Api.IntegrationTests.Helpers;
-using SupportDesk.Application.Features.Requests.Commands.CreateRequest;
 using SupportDesk.Application.Features.Requests.Commands.InactivateRequest;
-using SupportDesk.Application.Responses;
 using System.Net.Http.Headers;
-using System.Text;
 using Xunit;
 
 namespace SupportDesk.Api.IntegrationTests.Endpoints.Requests;
