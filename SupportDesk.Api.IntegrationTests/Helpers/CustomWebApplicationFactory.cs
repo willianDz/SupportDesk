@@ -8,14 +8,14 @@ using SupportDesk.Domain.Entities;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Xml.Linq;
 
 namespace SupportDesk.Api.IntegrationTests.Helpers
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         public string TestJwtToken { get; private set; } = string.Empty;
+
+        public string TestSupervisorJwtToken { get; private set; } = string.Empty;
 
         public string TestAdminJwtToken { get; private set; } = string.Empty;
 
@@ -25,16 +25,31 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
             Email = "testuser@test.com",
             FirstName = "Test",
             LastName = "User",
-            CreatedDate = DateTime.UtcNow
+            CreatedDate = DateTime.UtcNow,
+            IsSupervisor = false,
+            IsAdmin = false
+        };
+
+        private readonly User _testSupervisorUser = new()
+        {
+            Id = Guid.NewGuid(),
+            Email = "testsupervisoruser@test.com",
+            FirstName = "User",
+            LastName = "Admin",
+            CreatedDate = DateTime.UtcNow,
+            IsSupervisor = true,
+            IsAdmin = false
         };
 
         private readonly User _testAdminUser = new()
         {
             Id = Guid.NewGuid(),
-            Email = "testadinuser@test.com",
+            Email = "testadminuser@test.com",
             FirstName = "User",
             LastName = "Admin",
-            CreatedDate = DateTime.UtcNow
+            CreatedDate = DateTime.UtcNow,
+            IsSupervisor = false,
+            IsAdmin = true
         };
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -72,9 +87,10 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
 
                 // Generar un JWT para los usuarios de prueba.
                 var tokenGenerator = scopedServices.GetRequiredService<ITokenGenerator>();
-                TestJwtToken = GenerateJwtToken(_testUser, false, tokenGenerator);
 
-                TestAdminJwtToken = GenerateJwtToken(_testAdminUser, true, tokenGenerator);
+                TestJwtToken = GenerateJwtToken(_testUser, tokenGenerator);
+                TestSupervisorJwtToken = GenerateJwtToken(_testSupervisorUser, tokenGenerator);
+                TestAdminJwtToken = GenerateJwtToken(_testAdminUser, tokenGenerator);
 
                 // Crear la carpeta FileStorage si no existe
                 var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
@@ -104,7 +120,7 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
         {
             context.Users.Add(_testUser);
 
-            context.Users.Add(_testAdminUser);
+            context.Users.Add(_testSupervisorUser);
 
             context.SaveChanges();
 
@@ -138,13 +154,14 @@ namespace SupportDesk.Api.IntegrationTests.Helpers
             context.SaveChanges();
         }
 
-        private string GenerateJwtToken(User user, bool esAdmin, ITokenGenerator tokenGenerator)
+        private string GenerateJwtToken(User user,ITokenGenerator tokenGenerator)
         {
             var tokenRequest = new TokenGenerationRequest
             {
                 UserId = user.Id,
                 Email = user.Email,
-                IsAdmin = esAdmin
+                IsSupervisor = user.IsSupervisor,
+                IsAdmin = user.IsAdmin,
             };
 
             return tokenGenerator.GenerateToken(tokenRequest);

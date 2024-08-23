@@ -16,6 +16,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Seed
                 .Options;
 
             _dbContext = new ApplicationDbContext(options);
+            _dbContext.Database.EnsureCreated();
         }
 
         [Fact]

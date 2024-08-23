@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportDesk.Application.Contracts.Infraestructure.FileStorage;
@@ -67,12 +68,14 @@ public static class InfrastructureServiceRegistration
         var smtpPort = int.Parse(configuration["Smtp:Port"]!);
         var smtpUsername = configuration["Smtp:Username"]!;
         var smtpPassword = configuration["Smtp:Password"]!;
+        var smtpClient = new SmtpClient();
 
-        //services.AddTransient<INotificationService>(provider => new SmtpNotificationService(
-        //    smtpServer, 
-        //    smtpPort, 
-        //    smtpUsername, 
-        //    smtpPassword, 
-        //    provider.GetRequiredService<IUserRepository>()));
+        services.AddTransient<INotificationService>(provider => new SmtpNotificationService(
+            smtpServer,
+            smtpPort,
+            smtpUsername,
+            smtpPassword,
+            provider.GetRequiredService<IUserRepository>(),
+            smtpClient));
     }
 }

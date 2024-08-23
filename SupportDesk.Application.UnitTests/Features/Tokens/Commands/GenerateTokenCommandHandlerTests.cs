@@ -24,7 +24,9 @@ public class GenerateTokenCommandHandlerTests
         {
             UserId = Guid.NewGuid(),
             Email = "testuser@test.com",
-            IsAdmin = true
+            IsSupervisor = true,
+            IsAdmin = false,
+            CustomClaims = []
         };
 
         _tokenGeneratorMock.Setup(tg => tg.GenerateToken(It.IsAny<TokenGenerationRequest>(), CancellationToken.None))
@@ -39,6 +41,7 @@ public class GenerateTokenCommandHandlerTests
         _tokenGeneratorMock.Verify(tg => tg.GenerateToken(It.Is<TokenGenerationRequest>(
             r => r.UserId == command.UserId &&
                  r.Email == command.Email &&
+                 r.IsSupervisor == command.IsSupervisor &&
                  r.IsAdmin == command.IsAdmin), CancellationToken.None), Times.Once);
     }
 }

@@ -11,6 +11,8 @@ namespace SupportDesk.Domain.Entities
         public DateTime? BirthDate { get; set; }
         public int? GenderId { get; set; }
         public string? PhotoUrl { get; set; }
+        public bool IsAdmin { get; set; }
+        public bool IsSupervisor { get; set; }
 
         public Gender? Gender { get; set; }
         public ICollection<UserZone>? UserZones { get; set; }

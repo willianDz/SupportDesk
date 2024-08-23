@@ -10,6 +10,8 @@ public class UserDto
     public int? GenderId { get; set; }
     public string? PhotoUrl { get; set; }
     public bool IsActive { get; set; } = true;
+    public bool IsAdmin { get; set; }
+    public bool IsSupervisor { get; set; }
 
     public GenderDto? Gender { get; set; }
     public ICollection<UserZoneDto>? UserZones { get; set; }

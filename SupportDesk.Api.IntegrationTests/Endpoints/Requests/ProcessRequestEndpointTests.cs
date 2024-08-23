@@ -24,7 +24,7 @@ public class ProcessRequestEndpointTests : IClassFixture<CustomWebApplicationFac
     public async Task ProcessRequest_Should_Return_Updated_RequestDto()
     {
         // Arrange
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _factory.TestAdminJwtToken);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _factory.TestSupervisorJwtToken);
 
         var command = new ProcessRequestCommand
         {
@@ -52,7 +52,7 @@ public class ProcessRequestEndpointTests : IClassFixture<CustomWebApplicationFac
     public async Task ProcessRequest_Should_Return_Error_When_Request_Not_Found()
     {
         // Arrange
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _factory.TestAdminJwtToken);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _factory.TestSupervisorJwtToken);
 
         var command = new ProcessRequestCommand
         {

@@ -2,6 +2,9 @@
 
 public static class AuthConstants
 {
+    public const string SupervisorUserPolicyName = "Supervisor";
+    public const string SupervisorUserClaimName = "issupervisor";
+    
     public const string AdminUserPolicyName = "Admin";
     public const string AdminUserClaimName = "isadmin";
 

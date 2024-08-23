@@ -28,7 +28,9 @@ namespace SupportDesk.Infrastructure.UnitTests.Security
             {
                 UserId = Guid.NewGuid(),
                 Email = "testuser@test.com",
-                IsAdmin = true
+                IsSupervisor = true,
+                IsAdmin = false,
+                CustomClaims = []
             };
 
             // Act
@@ -60,6 +62,7 @@ namespace SupportDesk.Infrastructure.UnitTests.Security
             Assert.Contains(claims, c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == request.Email);
             Assert.Contains(claims, c => c.Type == JwtRegisteredClaimNames.Email && c.Value == request.Email);
             Assert.Contains(claims, c => c.Type == "userid" && c.Value == request.UserId.ToString());
+            Assert.Contains(claims, c => c.Type == "issupervisor" && c.Value.Equals(request.IsSupervisor.ToString(), StringComparison.OrdinalIgnoreCase));
             Assert.Contains(claims, c => c.Type == "isadmin" && c.Value.Equals(request.IsAdmin.ToString(), StringComparison.OrdinalIgnoreCase));
         }
 
@@ -72,6 +75,7 @@ namespace SupportDesk.Infrastructure.UnitTests.Security
             {
                 UserId = Guid.NewGuid(),
                 Email = "testuser@test.com",
+                IsSupervisor = false,
                 IsAdmin = false,
                 CustomClaims = {
                     { "custom_claim_1", "CustomValue1" },
@@ -115,7 +119,9 @@ namespace SupportDesk.Infrastructure.UnitTests.Security
             {
                 UserId = Guid.NewGuid(),
                 Email = "testuser@test.com",
-                IsAdmin = true
+                IsSupervisor = true,
+                IsAdmin = true,
+                CustomClaims = []
             };
 
             // Act
@@ -138,7 +144,9 @@ namespace SupportDesk.Infrastructure.UnitTests.Security
             {
                 UserId = Guid.NewGuid(),
                 Email = "testuser@test.com",
-                IsAdmin = true
+                IsSupervisor = true,
+                IsAdmin = false,
+                CustomClaims = []
             };
 
             // Act

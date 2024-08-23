@@ -21,6 +21,8 @@ namespace SupportDesk.Domain.UnitTests.Entities
             user.BirthDate.Should().BeNull();
             user.GenderId.Should().BeNull();
             user.PhotoUrl.Should().BeNull();
+            user.IsAdmin.Should().BeFalse();
+            user.IsSupervisor.Should().BeFalse();
             user.IsActive.Should().BeTrue();
             user.CreatedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         }

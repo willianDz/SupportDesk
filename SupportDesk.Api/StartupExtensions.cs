@@ -61,7 +61,7 @@ public static class StartupExtensions
     }
 
     public static IServiceCollection ConfigureAuthentication(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IConfiguration configuration)
     {
         if (string.IsNullOrEmpty(configuration["Jwt:Key"]) || string.IsNullOrEmpty(configuration["Jwt:Issuer"]) || string.IsNullOrEmpty(configuration["Jwt:Audience"]))
@@ -92,7 +92,7 @@ public static class StartupExtensions
         return services;
 
     }
-    
+
     public static IServiceCollection ConfigureAuthorization(this IServiceCollection services)
     {
         services.AddAuthorization(x =>
@@ -100,9 +100,15 @@ public static class StartupExtensions
             x.AddPolicy(AuthConstants.AdminUserPolicyName,
                 p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
 
+            x.AddPolicy(AuthConstants.SupervisorUserPolicyName,
+                p => p.RequireAssertion(c =>
+                    c.User.HasClaim(m => m is { Type: AuthConstants.AdminUserClaimName, Value: "true" }) ||
+                    c.User.HasClaim(m => m is { Type: AuthConstants.SupervisorUserClaimName, Value: "true" })));
+
             x.AddPolicy(AuthConstants.TrustedMemberPolicyName,
                 p => p.RequireAssertion(c =>
                     c.User.HasClaim(m => m is { Type: AuthConstants.AdminUserClaimName, Value: "true" }) ||
+                    c.User.HasClaim(m => m is { Type: AuthConstants.SupervisorUserClaimName, Value: "true" }) ||
                     c.User.HasClaim(m => m is { Type: AuthConstants.TrustedMemberClaimName, Value: "true" })));
         });
 

@@ -16,7 +16,7 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
 
             builder.Property(u => u.Email)
                 .IsRequired();
-            
+
             builder.Property(u => u.FirstName)
                 .HasMaxLength(100)
                 .IsRequired();
@@ -34,6 +34,11 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
             builder.Property(u => u.PhotoUrl)
                 .IsRequired(false);
 
+            builder.Property(u => u.IsAdmin)
+                .IsRequired();
+
+            builder.Property(u => u.IsSupervisor)
+                .IsRequired();
 
             builder.HasOne(u => u.Gender)
                 .WithMany(g => g.Users)
@@ -57,6 +62,16 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
                 .WithOne(r => r.ReviewerUser)
                 .HasForeignKey(r => r.ReviewerUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasData(new User
+            {
+                Id = Guid.NewGuid(),
+                Email = "williandiaz0012@gmail.com",
+                FirstName = "Administrador",
+                LastName = "Administrador",
+                IsAdmin = true,
+                IsSupervisor = true
+            });
         }
     }
 }

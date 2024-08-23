@@ -20,6 +20,7 @@ public class GenerateTokenCommandHandler : IRequestHandler<GenerateTokenCommand,
         {
             UserId = request.UserId,
             Email = request.Email,
+            IsSupervisor = request.IsSupervisor,
             IsAdmin = request.IsAdmin,
             CustomClaims = request.CustomClaims,
         };
