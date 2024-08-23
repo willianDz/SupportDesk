@@ -8,6 +8,7 @@ namespace SupportDesk.Application.Contracts.Services
             Request request,
             Guid userId,
             int newStatusId,
+            string? reviewerUserComments,
             CancellationToken cancellationToken = default);
 
         Task<bool> ValidateUserCanUpdateHisRequestAsync(

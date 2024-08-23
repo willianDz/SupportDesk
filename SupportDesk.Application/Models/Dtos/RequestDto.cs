@@ -11,6 +11,7 @@ public class RequestDto
     public DateTime? StartReviewDate { get; set; }
     public DateTime? ApprovalRejectionDate { get; set; }
     public int RequestStatusId { get; set; }
+    public string? ReviewerUserComments { get; set; }
     public bool IsActive { get; set; } = true;
 
     public UserDto? ReviewerUser { get; set; }

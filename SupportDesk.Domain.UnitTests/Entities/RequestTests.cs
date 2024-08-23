@@ -21,6 +21,7 @@ namespace SupportDesk.Domain.UnitTests.Entities
             request.ZoneId.Should().Be(0);
             request.Comments.Should().BeEmpty();
             request.StartReviewDate.Should().BeNull();
+            request.ReviewerUserComments.Should().BeNullOrEmpty();
             request.ApprovalRejectionDate.Should().BeNull();
             request.RequestStatusId.Should().Be(0);
             request.IsActive.Should().BeTrue();

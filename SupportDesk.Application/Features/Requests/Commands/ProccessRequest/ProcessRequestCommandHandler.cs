@@ -43,7 +43,12 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
         // 2. Validar las reglas de negocio usando el servicio de validación.
         try
         {
-            await _validationService.ValidateUserCanProcessRequestAsync(requestToProcess, request.UserId, request.NewStatusId, cancellationToken);
+            await _validationService.ValidateUserCanProcessRequestAsync(
+                requestToProcess,
+                request.UserId,
+                request.NewStatusId,
+                request.ReviewerUserComments,
+                cancellationToken);
         }
         catch (InvalidOperationException ex)
         {
@@ -53,15 +58,16 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
         }
 
         // 3. Actualizar el estado de la solicitud.
-        requestToProcess.RequestStatusId = request.NewStatusId;
-        requestToProcess.LastModifiedBy = request.UserId;
-        requestToProcess.LastModifiedDate = DateTime.UtcNow;
-
         if (request.NewStatusId == (int)RequestStatusesEnum.UnderReview)
         {
             requestToProcess.ReviewerUserId = request.UserId;
             requestToProcess.StartReviewDate = DateTime.UtcNow;
         }
+
+        requestToProcess.RequestStatusId = request.NewStatusId;
+        requestToProcess.ReviewerUserComments = request.ReviewerUserComments;
+        requestToProcess.LastModifiedBy = request.UserId;
+        requestToProcess.LastModifiedDate = DateTime.UtcNow;
 
         await _requestRepository.UpdateAsync(requestToProcess, cancellationToken);
 

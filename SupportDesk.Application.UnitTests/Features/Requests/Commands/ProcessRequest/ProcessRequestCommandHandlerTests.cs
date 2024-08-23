@@ -37,7 +37,13 @@ public class ProcessRequestCommandHandlerTests
         _mockRequestRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Request?)null);
 
-        var command = new ProcessRequestCommand { RequestId = 1, UserId = Guid.NewGuid(), NewStatusId = (int)RequestStatusesEnum.Approved };
+        var command = new ProcessRequestCommand
+        {
+            RequestId = 1,
+            UserId = Guid.NewGuid(),
+            NewStatusId = (int)RequestStatusesEnum.Approved,
+            ReviewerUserComments = "Valid reviewer user comments"
+        };
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -56,10 +62,16 @@ public class ProcessRequestCommandHandlerTests
         _mockRequestRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(request);
 
-        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException(RequestMessages.InactiveRequestCannotBeProcessed));
 
-        var command = new ProcessRequestCommand { RequestId = 1, UserId = Guid.NewGuid(), NewStatusId = (int)RequestStatusesEnum.Approved };
+        var command = new ProcessRequestCommand
+        {
+            RequestId = 1,
+            UserId = Guid.NewGuid(),
+            NewStatusId = (int)RequestStatusesEnum.Approved,
+            ReviewerUserComments = "Valid reviewer user comments"
+        };
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -79,7 +91,7 @@ public class ProcessRequestCommandHandlerTests
         _mockRequestRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(request);
 
-        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         var command = new ProcessRequestCommand { RequestId = 1, UserId = userId, NewStatusId = (int)RequestStatusesEnum.UnderReview };
@@ -110,10 +122,16 @@ public class ProcessRequestCommandHandlerTests
         _mockRequestRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(request);
 
-        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var command = new ProcessRequestCommand { RequestId = 1, UserId = userId, NewStatusId = (int)RequestStatusesEnum.Approved };
+        var command = new ProcessRequestCommand
+        {
+            RequestId = 1,
+            UserId = userId,
+            NewStatusId = (int)RequestStatusesEnum.Approved,
+            ReviewerUserComments = "Valid reviewer user comments"
+        };
 
         _mockMapper.Setup(m => m.Map<RequestDto>(It.IsAny<Request>()))
             .Returns(new RequestDto { Id = request.Id, RequestStatusId = command.NewStatusId });

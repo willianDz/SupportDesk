@@ -12,6 +12,7 @@ namespace SupportDesk.Domain.Entities
         public DateTime? StartReviewDate { get; set; }
         public DateTime? ApprovalRejectionDate { get; set; }
         public int RequestStatusId { get; set; }
+        public string? ReviewerUserComments { get; set; }
 
         public User? ReviewerUser { get; set; }
         public RequestType RequestType { get; set; } = null!;

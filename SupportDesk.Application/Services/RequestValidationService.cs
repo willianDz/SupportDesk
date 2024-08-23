@@ -19,6 +19,7 @@ public class RequestValidationService : IRequestValidationService
         Request request,
         Guid userId,
         int newStatusId,
+        string? reviewerUserComments,
         CancellationToken cancellationToken = default)
     {
         if (!request.IsActive)
@@ -55,6 +56,24 @@ public class RequestValidationService : IRequestValidationService
         if (hasRequestTypePermission != null && !hasRequestTypePermission.Value)
         {
             throw new InvalidOperationException(RequestMessages.UserNoRequestTypePermission);
+        }
+
+        if (string.IsNullOrEmpty(reviewerUserComments) 
+            && (newStatusId == (int)RequestStatusesEnum.Approved || newStatusId == (int)RequestStatusesEnum.Rejected))
+        {
+            throw new InvalidOperationException(RequestMessages.ReviewerUserCommentsAreRequired);
+        }
+
+        if ((newStatusId == (int)RequestStatusesEnum.Approved || newStatusId == (int)RequestStatusesEnum.Rejected) 
+            && reviewerUserComments!.Length < 15)
+        {
+            throw new InvalidOperationException(RequestMessages.CommentsMinLenght);
+        }
+
+        if ((newStatusId == (int)RequestStatusesEnum.Approved || newStatusId == (int)RequestStatusesEnum.Rejected)
+            && reviewerUserComments!.Length > 800)
+        {
+            throw new InvalidOperationException(RequestMessages.CommentsMaxLenght);
         }
 
         return true;

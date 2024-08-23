@@ -27,7 +27,7 @@ public class RequestValidationServiceTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _validationService.ValidateUserCanProcessRequestAsync(request, Guid.NewGuid(), (int)RequestStatusesEnum.UnderReview));
+            _validationService.ValidateUserCanProcessRequestAsync(request, Guid.NewGuid(), (int)RequestStatusesEnum.UnderReview, string.Empty));
 
         Assert.Equal(RequestMessages.InactiveRequestCannotBeProcessed, ex.Message);
     }
@@ -40,7 +40,7 @@ public class RequestValidationServiceTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _validationService.ValidateUserCanProcessRequestAsync(request, Guid.NewGuid(), (int)RequestStatusesEnum.Rejected));
+            _validationService.ValidateUserCanProcessRequestAsync(request, Guid.NewGuid(), (int)RequestStatusesEnum.Rejected, string.Empty));
 
         Assert.Equal(RequestMessages.RequestAlreadyApprovedOrRejected, ex.Message);
     }
@@ -58,7 +58,7 @@ public class RequestValidationServiceTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _validationService.ValidateUserCanProcessRequestAsync(request, userId, (int)RequestStatusesEnum.UnderReview));
+            _validationService.ValidateUserCanProcessRequestAsync(request, userId, (int)RequestStatusesEnum.UnderReview, string.Empty));
 
         Assert.Equal(RequestMessages.UserNoZonePermission, ex.Message);
     }
@@ -76,7 +76,25 @@ public class RequestValidationServiceTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _validationService.ValidateUserCanProcessRequestAsync(request, userId, (int)RequestStatusesEnum.UnderReview));
+            _validationService.ValidateUserCanProcessRequestAsync(request, userId, (int)RequestStatusesEnum.UnderReview, string.Empty));
+
+        Assert.Equal(RequestMessages.UserNoRequestTypePermission, ex.Message);
+    }
+
+    [Fact]
+    public async Task ValidateUserCanProcessRequestAsync_Should_Throw_Exception_When_Reviewer_User_Comments_Are_Too_Shorts()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var request = new Request { Id = 1, IsActive = true, RequestStatusId = (int)RequestStatusesEnum.New, RequestTypeId = 1 };
+        var user = new User { Id = userId, UserRequestTypes = new List<UserRequestType>() }; // No request types assigned to user
+
+        _mockUserRepository.Setup(u => u.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _validationService.ValidateUserCanProcessRequestAsync(request, userId, (int)RequestStatusesEnum.Approved, "Short comment"));
 
         Assert.Equal(RequestMessages.UserNoRequestTypePermission, ex.Message);
     }

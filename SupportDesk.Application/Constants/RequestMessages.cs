@@ -9,6 +9,7 @@
         public const string UserNotFound = "Usuario no encontrado.";
         public const string UserNoZonePermission = "Usuario no tiene permisos para procesas solicitudes de esta zona.";
         public const string UserNoRequestTypePermission = "Usuario no tiene permisos para procesar este tipo de solicitudes.";
+        public const string ReviewerUserCommentsAreRequired = "Los comentarios respecto de la revisión de la solicitud son requeridos.";
         public const string InvalidUser = "Usuario inválido.";
         public const string InvalidRequestType = "Tipo de solicitud inválida.";
         public const string InvalidZone = "Zona inválida.";
