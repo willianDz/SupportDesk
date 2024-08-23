@@ -1,4 +1,5 @@
-﻿using SupportDesk.Application.Contracts.Persistence;
+﻿using Microsoft.EntityFrameworkCore;
+using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Domain.Entities;
 
 namespace SupportDesk.Persistence.SupportDesk.Repositories
@@ -7,6 +8,15 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
     {
         public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<List<User>> GetUsersByIdsAsync(
+            List<Guid> userIds, 
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Users
+                .Where(user => userIds.Contains(user.Id))
+                .ToListAsync(cancellationToken);
         }
     }
 }

@@ -142,5 +142,4 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             totalCount.ShouldBe(0);
         }
     }
-
 }

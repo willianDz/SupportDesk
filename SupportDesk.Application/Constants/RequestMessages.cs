@@ -16,9 +16,9 @@
         public const string CommentsMinLenght = "Los comentarios deben tener al menos 15 caracteres.";
         public const string CommentsMaxLenght = "Los comentarios no deben tener mas de 800 caracteres.";
         public const string RequestNotFoundOrIsInactive = "Los comentarios no deben tener mas de 800 caracteres.";
+        public const string InactivateRequestForbidden = "No puede inactivar solicitudes creadas por otros usuarios.";
         public const string RequestHasBeenInactive = "La solicitud ha sido inactivada exitosamente.";
         public const string InvalidRequestId = "Solicitud ID Inválida.";
-        
         public const string RequestAlreadyProccessed = "No se puede actualizar una solicitud que ya ha sido procesada.";
         public const string CannotUpdateRequestTypeOrZone = "No se puede actualizar una solicitud que ya ha sido procesada.";
         public const string RequestHasBeenUpdated = "No se puede actualizar una solicitud que ya ha sido procesada.";

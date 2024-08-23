@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using SupportDesk.Api.Auth;
 using SupportDesk.Application.Features.Users.Requests.Queries.GetMyRequests;
 

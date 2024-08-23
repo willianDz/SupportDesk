@@ -28,6 +28,13 @@ public class InactivateRequestCommandHandler : IRequestHandler<InactivateRequest
             return response;
         }
 
+        if (requestToInactivate.CreatedBy != request.UserId)
+        {
+            response.Success = false;
+            response.Message = RequestMessages.InactivateRequestForbidden;
+            return response;
+        }
+
         requestToInactivate.IsActive = false;
         requestToInactivate.LastModifiedBy = request.UserId;
         requestToInactivate.LastModifiedDate = DateTime.UtcNow;
