@@ -22,8 +22,36 @@ public interface IRequestRepository : IAsyncRepository<Request>
         TimeSpan expiringThreshold, 
         CancellationToken cancellationToken = default);
 
-    Task<int> GetRequestsCountByDateAsync(DateTime date, CancellationToken cancellationToken);
-    Task<int> GetProcessedRequestsCountByDateAsync(DateTime date, CancellationToken cancellationToken);
+    Task<int> GetRequestsCountByDateAsync(
+        DateTime date, 
+        CancellationToken cancellationToken);
+    
+    Task<int> GetProcessedRequestsCountByDateAsync(
+        DateTime date, 
+        CancellationToken cancellationToken);
+    
     Task<int> GetPendingRequestsCountAsync(CancellationToken cancellationToken);
+    
     Task<TimeSpan> GetAverageResponseTimeAsync(CancellationToken cancellationToken);
+
+    Task<int> GetRequestCountByStatusAsync(
+        int statusId, 
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken cancellationToken = default);
+    
+    Task<Dictionary<int, int>> GetWeeklyRequestCountsAsync(
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken cancellationToken = default);
+    
+    Task<List<(int RequestTypeId, int ZoneId, int Count)>> GetRequestTrendsByTypeAndZoneAsync(
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken cancellationToken = default);
+    
+    Task<TimeSpan> GetAverageResolutionTimeAsync(
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken cancellationToken = default);
 }

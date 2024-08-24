@@ -10,8 +10,6 @@ using SupportDesk.Api.Endpoints;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 using Quartz;
-using Quartz.Impl;
-using Quartz.Spi;
 using SupportDesk.Application.Features.Jobs;
 
 
@@ -167,8 +165,13 @@ public static class StartupExtensions
                 .StartNow()
                 .WithCronSchedule("0 0 0 * * ?")); // Ejecutar a medianoche todos los días
 
-
-            
+            // Configuración del job de infore semanal para los admins
+            q.AddJob<WeeklyReportJob>(opts => opts.WithIdentity("WeeklyReportJob"));
+            q.AddTrigger(opts => opts
+                .ForJob("WeeklyReportJob")
+                .WithIdentity("WeeklyReportTrigger")
+                .StartNow()
+                .WithCronSchedule("0 0 12 ? * MON *")); // Ejecución cada lunes a las 12 PM
         });
 
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

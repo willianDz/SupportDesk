@@ -144,5 +144,60 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
 
             return TimeSpan.FromTicks((long)averageTicks);
         }
+
+
+        public async Task<int> GetRequestCountByStatusAsync(
+            int statusId, 
+            DateTime startDate, 
+            DateTime endDate, 
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Requests
+                .Where(r => r.RequestStatusId == statusId && r.CreatedDate >= startDate && r.CreatedDate <= endDate && r.IsActive)
+                .CountAsync(cancellationToken);
+        }
+
+        public async Task<Dictionary<int, int>> GetWeeklyRequestCountsAsync(
+            DateTime startDate, 
+            DateTime endDate, 
+            CancellationToken cancellationToken = default)
+        {
+            var requests = await _dbContext.Requests
+                .Where(r => r.CreatedDate >= startDate && r.CreatedDate <= endDate && r.IsActive)
+                .ToListAsync(cancellationToken);
+
+            return requests
+                .GroupBy(r => r.RequestStatusId)
+                .ToDictionary(g => g.Key, g => g.Count());
+        }
+
+        public async Task<List<(int RequestTypeId, int ZoneId, int Count)>> GetRequestTrendsByTypeAndZoneAsync(
+            DateTime startDate, 
+            DateTime endDate, 
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Requests
+                .Where(r => r.CreatedDate >= startDate && r.CreatedDate <= endDate && r.IsActive)
+                .GroupBy(r => new { r.RequestTypeId, r.ZoneId })
+                .Select(g => new { g.Key.RequestTypeId, g.Key.ZoneId, Count = g.Count() })
+                .ToListAsync(cancellationToken)
+                .ContinueWith(task => task.Result
+                    .Select(r => (r.RequestTypeId, r.ZoneId, r.Count))
+                    .ToList());
+        }
+
+        public async Task<TimeSpan> GetAverageResolutionTimeAsync(
+            DateTime startDate, 
+            DateTime endDate, 
+            CancellationToken cancellationToken = default)
+        {
+            var averageTicks = await _dbContext.Requests
+                .Where(r => r.ReviewerUserId != null &&
+                            r.RequestStatusId == (int)RequestStatusesEnum.Approved &&
+                            r.CreatedDate >= startDate && r.CreatedDate <= endDate)
+                .AverageAsync(r => (r.LastModifiedDate!.Value - r.CreatedDate).Ticks, cancellationToken);
+
+            return TimeSpan.FromTicks(Convert.ToInt64(averageTicks));
+        }
     }
 }
