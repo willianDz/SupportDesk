@@ -237,4 +237,85 @@ public class ProcessRequestCommandHandlerTests
             Times.Once);
     }
 
+    [Fact]
+    public async Task Handle_Should_Send_Notification_When_Request_Is_UnderReview()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var request = new Request
+        {
+            Id = 1,
+            RequestStatusId = (int)RequestStatusesEnum.New,
+            CreatedBy = userId
+        };
+
+        _mockRequestRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(request);
+
+        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var command = new ProcessRequestCommand
+        {
+            RequestId = 1,
+            UserId = userId,
+            NewStatusId = (int)RequestStatusesEnum.UnderReview
+        };
+
+        _mockMapper.Setup(m => m.Map<RequestDto>(It.IsAny<Request>()))
+            .Returns(new RequestDto { Id = request.Id, RequestStatusId = command.NewStatusId });
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _mockNotificationService.Verify(n => n.SendNotificationAsync(It.Is<NotificationMessage>(msg =>
+            msg.RecipientUserIds.Contains(userId) &&
+            msg.Subject.Contains($"Solicitud {request.Id} en Revisión")), It.IsAny<CancellationToken>()), Times.Once);
+
+        Assert.True(result.Success);
+    }
+
+    [Fact]
+    public async Task Handle_Should_Log_Error_When_Notification_UnderReview_Fails()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var request = new Request
+        {
+            Id = 1,
+            RequestStatusId = (int)RequestStatusesEnum.New,
+            CreatedBy = userId
+        };
+
+        _mockRequestRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(request);
+
+        _mockValidationService.Setup(v => v.ValidateUserCanProcessRequestAsync(It.IsAny<Request>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var command = new ProcessRequestCommand
+        {
+            RequestId = 1,
+            UserId = userId,
+            NewStatusId = (int)RequestStatusesEnum.UnderReview
+        };
+
+        _mockNotificationService
+            .Setup(n => n.SendNotificationAsync(It.IsAny<NotificationMessage>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Test exception"));
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains(NotificationsMessages.FailedToSendNotificationRequestUnderReview)),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 }

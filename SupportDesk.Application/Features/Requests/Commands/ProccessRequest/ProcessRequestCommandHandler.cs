@@ -40,7 +40,7 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
     {
         var response = new ProcessRequestCommandResponse();
 
-        // 1. Obtener la solicitud desde el repositorio.
+        // Obtener la solicitud desde el repositorio.
         var requestToProcess = await _requestRepository.GetByIdAsync(request.RequestId, cancellationToken);
 
         if (requestToProcess == null)
@@ -50,7 +50,7 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
             return response;
         }
 
-        // 2. Validar las reglas de negocio usando el servicio de validación.
+        // Validar las reglas de negocio usando el servicio de validación.
         try
         {
             await _validationService.ValidateUserCanProcessRequestAsync(
@@ -67,7 +67,7 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
             return response;
         }
 
-        // 3. Actualizar el estado de la solicitud.
+        // Actualizar el estado de la solicitud.
         if (request.NewStatusId == (int)RequestStatusesEnum.UnderReview)
         {
             requestToProcess.ReviewerUserId = request.UserId;
@@ -81,13 +81,38 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
 
         await _requestRepository.UpdateAsync(requestToProcess, cancellationToken);
 
-        // 4. Enviar notificación al solicitante si la solicitud es aprobada o rechazada.
+        // Enviar notificación al solicitante cuando la solicitud comience a ser revisada.
+        await NotifyRequesterUnderReviewAsync(requestToProcess, cancellationToken);
+
+        // Enviar notificación al solicitante si la solicitud es aprobada o rechazada.
         await NotifyRequesterAsync(requestToProcess, cancellationToken);
 
-        // 5. Preparar la respuesta.
+        // Preparar la respuesta.
         response.ProcessedRequest = _mapper.Map<RequestDto>(requestToProcess);
 
         return response;
+    }
+
+    private async Task NotifyRequesterUnderReviewAsync(Request requestToProcess, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (requestToProcess.RequestStatusId == (int)RequestStatusesEnum.UnderReview)
+            {
+                var notificationMessage = new NotificationMessage
+                {
+                    RecipientUserIds = new List<Guid> { requestToProcess.CreatedBy!.Value },
+                    Subject = $"Solicitud {requestToProcess.Id} en Revisión",
+                    Body = $"Su solicitud con ID {requestToProcess.Id} ha comenzado a ser revisada."
+                };
+
+                await _notificationService.SendNotificationAsync(notificationMessage, cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, NotificationsMessages.FailedToSendNotificationRequestUnderReview);
+        }
     }
 
     private async Task NotifyRequesterAsync(Request requestToProcess, CancellationToken cancellationToken)
