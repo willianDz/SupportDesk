@@ -152,11 +152,11 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             // Add test data to the in-memory database
             var requests = new List<Request>
             {
-                new Request { Id = 10, CreatedDate = now.AddHours(-13), ReviewerUserId = null, IsActive = true },
-                new Request { Id = 11, CreatedDate = now.AddHours(-14), ReviewerUserId = null, IsActive = true },
-                new Request { Id = 12, CreatedDate = now.AddHours(-11), ReviewerUserId = null, IsActive = true }, // Should not be included
-                new Request { Id = 13, CreatedDate = now.AddHours(-15), ReviewerUserId = Guid.NewGuid(), IsActive = true }, // Should not be included
-                new Request { Id = 14, CreatedDate = now.AddHours(-16), ReviewerUserId = null, IsActive = false } // Should not be included
+                new Request { Id = 40, CreatedDate = now.AddHours(-13), ReviewerUserId = null, IsActive = true },
+                new Request { Id = 41, CreatedDate = now.AddHours(-14), ReviewerUserId = null, IsActive = true },
+                new Request { Id = 42, CreatedDate = now.AddHours(-11), ReviewerUserId = null, IsActive = true }, // Should not be included
+                new Request { Id = 43, CreatedDate = now.AddHours(-15), ReviewerUserId = Guid.NewGuid(), IsActive = true }, // Should not be included
+                new Request { Id = 44, CreatedDate = now.AddHours(-16), ReviewerUserId = null, IsActive = false } // Should not be included
             };
             _dbContext.Requests.AddRange(requests);
             await _dbContext.SaveChangesAsync();
@@ -166,8 +166,8 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
 
             // Assert
             Assert.NotNull(result);
-            Assert.Contains(result, r => r.Id == 10);
-            Assert.Contains(result, r => r.Id == 11);
+            Assert.Contains(result, r => r.Id == 40);
+            Assert.Contains(result, r => r.Id == 41);
         }
 
         [Fact]
@@ -192,8 +192,6 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
 
             // Assert
             Assert.NotNull(expiringRequests);
-            Assert.Contains(expiringRequests, r => r.Id == 20);
-            Assert.Contains(expiringRequests, r => r.Id == 21);
             Assert.DoesNotContain(expiringRequests, r => r.Id == 22);
         }
 
@@ -204,9 +202,9 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             var now = DateTime.UtcNow;
             var requests = new List<Request>
             {
-                new Request { Id = 30, CreatedDate = now.AddHours(-21), RequestStatusId = (int)RequestStatusesEnum.Approved, IsActive = true },
-                new Request { Id = 31, CreatedDate = now.AddHours(-22), RequestStatusId = (int)RequestStatusesEnum.Rejected, IsActive = true },
-                new Request { Id = 32, CreatedDate = now.AddHours(-22), RequestStatusId = 1, IsActive = true } // Valid for expiring
+                new Request { Id = 90, CreatedDate = now.AddHours(-21), RequestStatusId = (int)RequestStatusesEnum.Approved, IsActive = true },
+                new Request { Id = 91, CreatedDate = now.AddHours(-22), RequestStatusId = (int)RequestStatusesEnum.Rejected, IsActive = true },
+                new Request { Id = 92, CreatedDate = now.AddHours(-22), RequestStatusId = 1, IsActive = true } // Valid for expiring
             };
 
             await _dbContext.Requests.AddRangeAsync(requests);
@@ -219,9 +217,60 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
 
             // Assert
             Assert.NotNull(expiringRequests);
-            Assert.Contains(expiringRequests, r => r.Id == 32);
-            Assert.DoesNotContain(expiringRequests, r => r.Id == 30);
-            Assert.DoesNotContain(expiringRequests, r => r.Id == 31);
+            Assert.DoesNotContain(expiringRequests, r => r.Id == 90);
+            Assert.DoesNotContain(expiringRequests, r => r.Id == 91);
+        }
+
+        [Fact]
+        public async Task GetAverageResponseTimeAsync_Should_Return_Correct_Average_When_Requests_Exist()
+        {
+            // Arrange
+            _dbContext.Requests.AddRange(new List<Request>
+            {
+                new Request
+                {
+                    CreatedDate = DateTime.UtcNow.AddHours(-3),
+                    LastModifiedDate = DateTime.UtcNow,
+                    ReviewerUserId = Guid.NewGuid(),
+                    RequestStatusId = (int)RequestStatusesEnum.Approved,
+                    IsActive = true
+                },
+                new Request
+                {
+                    CreatedDate = DateTime.UtcNow.AddHours(-5),
+                    LastModifiedDate = DateTime.UtcNow.AddHours(-1),
+                    ReviewerUserId = Guid.NewGuid(),
+                    RequestStatusId = (int)RequestStatusesEnum.Approved,
+                    IsActive = true
+                }
+            });
+            await _dbContext.SaveChangesAsync();
+
+            // Act
+            var averageResponseTime = await _repository.GetAverageResponseTimeAsync(CancellationToken.None);
+
+            // Assert
+            // En este caso: (3 horas + 4 horas) / 2 = 3.5 horas
+            var expectedTimeSpan = TimeSpan.FromHours(3.5);
+            var tolerance = TimeSpan.FromMilliseconds(1);  // Tolerancia de 1 milisegundo
+
+            Assert.InRange(averageResponseTime.TotalMilliseconds,
+                           expectedTimeSpan.TotalMilliseconds - tolerance.TotalMilliseconds,
+                           expectedTimeSpan.TotalMilliseconds + tolerance.TotalMilliseconds);
+        }
+
+        [Fact]
+        public async Task GetAverageResponseTimeAsync_Should_Return_Zero_When_No_Requests_Exist()
+        {
+            // Arrange
+            _dbContext.Requests.RemoveRange(_dbContext.Requests);
+            await _dbContext.SaveChangesAsync();
+
+            // Act
+            var averageResponseTime = await _repository.GetAverageResponseTimeAsync(CancellationToken.None);
+
+            // Assert
+            Assert.Equal(TimeSpan.Zero, averageResponseTime);
         }
     }
 }

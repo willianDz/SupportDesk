@@ -21,4 +21,9 @@ public interface IRequestRepository : IAsyncRepository<Request>
     Task<IReadOnlyList<Request>> GetExpiringRequestsAsync(
         TimeSpan expiringThreshold, 
         CancellationToken cancellationToken = default);
+
+    Task<int> GetRequestsCountByDateAsync(DateTime date, CancellationToken cancellationToken);
+    Task<int> GetProcessedRequestsCountByDateAsync(DateTime date, CancellationToken cancellationToken);
+    Task<int> GetPendingRequestsCountAsync(CancellationToken cancellationToken);
+    Task<TimeSpan> GetAverageResponseTimeAsync(CancellationToken cancellationToken);
 }

@@ -159,6 +159,16 @@ public static class StartupExtensions
                     .WithIntervalInHours(24)
                     .RepeatForever()));
 
+            // Configuracion del job de informe diario
+            q.AddJob<DailyReportJob>(opts => opts.WithIdentity("DailyReportJob"));
+            q.AddTrigger(opts => opts
+                .ForJob("DailyReportJob")
+                .WithIdentity("DailyReportTrigger")
+                .StartNow()
+                .WithCronSchedule("0 0 0 * * ?")); // Ejecutar a medianoche todos los días
+
+
+            
         });
 
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

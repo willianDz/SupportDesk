@@ -96,5 +96,53 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<int> GetRequestsCountByDateAsync(DateTime date, CancellationToken cancellationToken)
+        {
+            return await _dbContext.Requests
+                .CountAsync(r => r.CreatedDate.Date == date.Date && r.IsActive, cancellationToken);
+        }
+
+        public async Task<int> GetProcessedRequestsCountByDateAsync(DateTime date, CancellationToken cancellationToken)
+        {
+            return await _dbContext.Requests
+                .CountAsync(r => r.LastModifiedDate != null &&
+                                 r.LastModifiedDate.Value.Date == date.Date &&
+                                 (r.RequestStatusId == (int)RequestStatusesEnum.Approved ||
+                                  r.RequestStatusId == (int)RequestStatusesEnum.Rejected) &&
+                                 r.IsActive, cancellationToken);
+        }
+
+        public async Task<int> GetPendingRequestsCountAsync(CancellationToken cancellationToken)
+        {
+            return await _dbContext.Requests
+                .CountAsync(r => r.ReviewerUserId == null &&
+                                 r.RequestStatusId != (int)RequestStatusesEnum.Approved &&
+                                 r.RequestStatusId != (int)RequestStatusesEnum.Rejected &&
+                                 r.IsActive, cancellationToken);
+        }
+
+        public async Task<TimeSpan> GetAverageResponseTimeAsync(CancellationToken cancellationToken)
+        {
+            var requestTimes = await _dbContext.Requests
+                .Where(r => r.ReviewerUserId != null &&
+                            r.RequestStatusId == (int)RequestStatusesEnum.Approved &&
+                            r.LastModifiedDate != null)
+                .Select(r => new
+                {
+                    r.CreatedDate,
+                    LastModifiedDate = r.LastModifiedDate.Value
+                })
+                .ToListAsync(cancellationToken);
+
+            if (!requestTimes.Any())
+            {
+                return TimeSpan.Zero;
+            }
+
+            var averageTicks = requestTimes
+                .Average(rt => (rt.LastModifiedDate - rt.CreatedDate).Ticks);
+
+            return TimeSpan.FromTicks((long)averageTicks);
+        }
     }
 }

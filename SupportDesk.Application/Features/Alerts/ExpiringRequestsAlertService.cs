@@ -61,7 +61,7 @@ public class ExpiringRequestsAlertService : IExpiringRequestsAlertService
         }
     }
 
-    private string BuildAlertBody(IReadOnlyList<Request> expiringRequests)
+    private static string BuildAlertBody(IReadOnlyList<Request> expiringRequests)
     {
         var body = new StringBuilder();
         body.AppendLine("Las siguientes solicitudes están próximas a expirar:");
