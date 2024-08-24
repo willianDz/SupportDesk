@@ -137,10 +137,9 @@ public static class StartupExtensions
     {
         services.AddQuartz(q =>
         {
-            // Usar la inyección de dependencias de ASP.NET Core
             q.UseMicrosoftDependencyInjectionJobFactory();
 
-            // Registrar los Jobs y Triggers
+            // Configuración del Job de Solicitudes Pendientes
             q.AddJob<PendingRequestsAlertJob>(opts => opts.WithIdentity("PendingRequestsAlertJob"));
             q.AddTrigger(opts => opts
                 .ForJob("PendingRequestsAlertJob")
@@ -149,6 +148,17 @@ public static class StartupExtensions
                 .WithSimpleSchedule(x => x
                     .WithIntervalInHours(12)
                     .RepeatForever()));
+
+            // Configuración del Job de Solicitudes Próximas a Expirar
+            q.AddJob<ExpiringRequestsAlertJob>(opts => opts.WithIdentity("ExpiringRequestsAlertJob"));
+            q.AddTrigger(opts => opts
+                .ForJob("ExpiringRequestsAlertJob")
+                .WithIdentity("ExpiringRequestsAlertTrigger")
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInHours(24)
+                    .RepeatForever()));
+
         });
 
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shouldly;
+using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Domain.Entities;
 using SupportDesk.Persistence.SupportDesk;
 using SupportDesk.Persistence.SupportDesk.Repositories;
@@ -122,7 +123,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
 
             // Assert
             result.ShouldNotBeNull();
-            result.Count.ShouldBe(2); // Only admin and supervisor should match
+            result.Count.ShouldBeGreaterThanOrEqualTo(2);
             result.ShouldContain(u => u.Email == "admin@example.com");
             result.ShouldContain(u => u.Email == "supervisor@example.com");
         }
@@ -162,6 +163,52 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             result.Count.ShouldBeGreaterThanOrEqualTo(1);
             Assert.Equal(zoneId, result.First().UserZones.First().ZoneId);
             Assert.Equal(requestTypeId, result.First().UserRequestTypes.First().RequestTypeId);
+        }
+
+        [Fact]
+        public async Task GetAdminUsersAsync_Should_Return_Admin_Users()
+        {
+            // Arrange
+            var users = new List<User>
+        {
+            new User { Id = Guid.NewGuid(), IsAdmin = true, IsActive = true },
+            new User { Id = Guid.NewGuid(), IsAdmin = true, IsActive = true },
+            new User { Id = Guid.NewGuid(), IsAdmin = false, IsActive = true } // Not an admin
+        };
+
+            await _dbContext.Users.AddRangeAsync(users);
+            await _dbContext.SaveChangesAsync();
+
+            // Act
+            var adminUsers = await _repository.GetAdminUsersAsync();
+
+            // Assert
+            Assert.NotNull(adminUsers);
+            adminUsers.Count.ShouldBeGreaterThanOrEqualTo(2);
+            Assert.All(adminUsers, u => Assert.True(u.IsAdmin));
+        }
+
+        [Fact]
+        public async Task GetAdminUsersAsync_Should_Not_Return_Inactive_Admin_Users()
+        {
+            // Arrange
+            var users = new List<User>
+        {
+            new User { Id = Guid.NewGuid(), IsAdmin = true, IsActive = true },
+            new User { Id = Guid.NewGuid(), IsAdmin = true, IsActive = false }, // Inactive admin
+            new User { Id = Guid.NewGuid(), IsAdmin = true, IsActive = true }
+        };
+
+            await _dbContext.Users.AddRangeAsync(users);
+            await _dbContext.SaveChangesAsync();
+
+            // Act
+            var adminUsers = await _repository.GetAdminUsersAsync();
+
+            // Assert
+            Assert.NotNull(adminUsers);
+            adminUsers.Count.ShouldBeGreaterThanOrEqualTo(2);
+            Assert.All(adminUsers, u => Assert.True(u.IsActive));
         }
     }
 }

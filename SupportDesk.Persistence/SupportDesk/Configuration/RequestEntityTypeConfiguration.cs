@@ -12,7 +12,7 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
 
             builder.HasKey(r => r.Id);
 
-            builder.Property(r => r.Id).IsRequired();
+            builder.Property(r => r.Id).ValueGeneratedOnAdd().IsRequired();
             builder.Property(r => r.Comments).HasMaxLength(800).IsRequired();
             builder.Property(r => r.StartReviewDate).IsRequired(false);
             builder.Property(r => r.ReviewerUserComments).IsRequired(false).HasMaxLength(800);

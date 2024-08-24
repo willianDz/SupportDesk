@@ -166,9 +166,62 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
 
             // Assert
             Assert.NotNull(result);
-            result.Count.ShouldBeGreaterThanOrEqualTo(2);
             Assert.Contains(result, r => r.Id == 10);
             Assert.Contains(result, r => r.Id == 11);
+        }
+
+        [Fact]
+        public async Task GetExpiringRequestsAsync_Should_Return_Expiring_Requests()
+        {
+            // Arrange
+            var now = DateTime.UtcNow;
+            var requests = new List<Request>
+            {
+                new Request { Id = 20, CreatedDate = now.AddHours(-21), RequestStatusId = 1, IsActive = true },
+                new Request { Id = 21, CreatedDate = now.AddHours(-22), RequestStatusId = 1, IsActive = true },
+                new Request { Id = 22, CreatedDate = now.AddHours(-5), RequestStatusId = 1, IsActive = true } // Not expiring
+            };
+
+            await _dbContext.Requests.AddRangeAsync(requests);
+            await _dbContext.SaveChangesAsync();
+
+            var expiringThreshold = TimeSpan.FromHours(20);
+
+            // Act
+            var expiringRequests = await _repository.GetExpiringRequestsAsync(expiringThreshold);
+
+            // Assert
+            Assert.NotNull(expiringRequests);
+            Assert.Contains(expiringRequests, r => r.Id == 20);
+            Assert.Contains(expiringRequests, r => r.Id == 21);
+            Assert.DoesNotContain(expiringRequests, r => r.Id == 22);
+        }
+
+        [Fact]
+        public async Task GetExpiringRequestsAsync_Should_Not_Return_Approved_Or_Rejected_Requests()
+        {
+            // Arrange
+            var now = DateTime.UtcNow;
+            var requests = new List<Request>
+            {
+                new Request { Id = 30, CreatedDate = now.AddHours(-21), RequestStatusId = (int)RequestStatusesEnum.Approved, IsActive = true },
+                new Request { Id = 31, CreatedDate = now.AddHours(-22), RequestStatusId = (int)RequestStatusesEnum.Rejected, IsActive = true },
+                new Request { Id = 32, CreatedDate = now.AddHours(-22), RequestStatusId = 1, IsActive = true } // Valid for expiring
+            };
+
+            await _dbContext.Requests.AddRangeAsync(requests);
+            await _dbContext.SaveChangesAsync();
+
+            var expiringThreshold = TimeSpan.FromHours(20);
+
+            // Act
+            var expiringRequests = await _repository.GetExpiringRequestsAsync(expiringThreshold);
+
+            // Assert
+            Assert.NotNull(expiringRequests);
+            Assert.Contains(expiringRequests, r => r.Id == 32);
+            Assert.DoesNotContain(expiringRequests, r => r.Id == 30);
+            Assert.DoesNotContain(expiringRequests, r => r.Id == 31);
         }
     }
 }

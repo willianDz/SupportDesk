@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Domain.Entities;
+using SupportDesk.Domain.Enums;
 
 namespace SupportDesk.Persistence.SupportDesk.Repositories
 {
@@ -79,5 +80,21 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
                             && r.IsActive)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<IReadOnlyList<Request>> GetExpiringRequestsAsync(
+            TimeSpan expiringThreshold,
+            CancellationToken cancellationToken = default)
+        {
+            var thresholdTime = DateTime.UtcNow.Subtract(expiringThreshold);
+
+            return await _dbContext.Requests
+                .Where(r => r.CreatedDate <= thresholdTime &&
+                            r.RequestStatusId != (int)RequestStatusesEnum.Approved &&
+                            r.RequestStatusId != (int)RequestStatusesEnum.Rejected &&
+                            r.IsActive)
+                .Include(r => r.ReviewerUser)
+                .ToListAsync(cancellationToken);
+        }
+
     }
 }

@@ -17,4 +17,8 @@ public interface IRequestRepository : IAsyncRepository<Request>
     Task<IReadOnlyList<Request>> GetPendingRequestsAsync(
             TimeSpan pendingThreshold,
             CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Request>> GetExpiringRequestsAsync(
+        TimeSpan expiringThreshold, 
+        CancellationToken cancellationToken = default);
 }

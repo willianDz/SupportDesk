@@ -17,4 +17,7 @@ public interface IUserRepository : IAsyncRepository<User>
         int zoneId, 
         int requestTypeId, 
         CancellationToken cancellationToken = default);
+
+    Task<List<User>> GetAdminUsersAsync(
+        CancellationToken cancellationToken = default);
 }
