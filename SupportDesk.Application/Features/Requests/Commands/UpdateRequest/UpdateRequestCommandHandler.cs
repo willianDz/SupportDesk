@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SupportDesk.Application.Constants;
 using SupportDesk.Application.Contracts.Infraestructure.FileStorage;
+using SupportDesk.Application.Contracts.Infraestructure.Notifications;
 using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Application.Contracts.Services;
 using SupportDesk.Application.Models.Dtos;
+using SupportDesk.Application.Models.Notifications;
 using SupportDesk.Domain.Entities;
 using SupportDesk.Domain.Enums;
 
@@ -15,18 +18,24 @@ public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand,
     private readonly IRequestRepository _requestRepository;
     private readonly IRequestValidationService _validationService;
     private readonly IFileStorageService _fileStorageService;
+    private readonly INotificationService _notificationService;
     private readonly IMapper _mapper;
+    private readonly ILogger<UpdateRequestCommandHandler> _logger;
 
     public UpdateRequestCommandHandler(
         IRequestRepository requestRepository,
         IRequestValidationService validationService,
         IFileStorageService fileStorageService,
-        IMapper mapper)
+        INotificationService notificationService,
+        IMapper mapper,
+        ILogger<UpdateRequestCommandHandler> logger)
     {
         _requestRepository = requestRepository;
         _validationService = validationService;
         _fileStorageService = fileStorageService;
+        _notificationService = notificationService;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<UpdateRequestCommandResponse> Handle(
@@ -105,6 +114,37 @@ public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand,
 
         response.RequestUpdated = _mapper.Map<RequestDto>(requestToUpdate);
         response.Message = RequestMessages.RequestHasBeenUpdated;
+
+        if (requestToUpdate.RequestStatusId == (int)RequestStatusesEnum.UnderReview)
+        {
+            await NotifySupervisorAsync(requestToUpdate, cancellationToken);
+        }
+
         return response;
+    }
+
+    private async Task NotifySupervisorAsync(Request updatedRequest, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (updatedRequest.ReviewerUserId == null)
+            {
+                _logger.LogWarning(NotificationsMessages.NoSupervisorAssignedToUpdatedRequest);
+                return;
+            }
+
+            var notificationMessage = new NotificationMessage
+            {
+                RecipientUserIds = new List<Guid> { updatedRequest.ReviewerUserId.Value },
+                Subject = "Solicitud actualizada por el solicitante",
+                Body = $"La solicitud con ID {updatedRequest.Id} ha sido actualizada por el solicitante."
+            };
+
+            await _notificationService.SendNotificationAsync(notificationMessage, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, NotificationsMessages.FailedToSendNotificationRequestUpdate);
+        }
     }
 }
