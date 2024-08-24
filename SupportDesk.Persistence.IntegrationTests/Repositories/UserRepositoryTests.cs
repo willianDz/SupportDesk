@@ -28,9 +28,57 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
         {
             var users = new List<User>
             {
-                new User { Id = Guid.NewGuid(), Email = "user1@test.com", FirstName = "John", LastName = "Doe" },
-                new User { Id = Guid.NewGuid(), Email = "user2@test.com", FirstName = "Jane", LastName = "Smith" },
-                new User { Id = Guid.NewGuid(), Email = "user3@test.com", FirstName = "Jim", LastName = "Brown" }
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "admin@example.com",
+                    FirstName = "Admin",
+                    LastName = "User",
+                    IsAdmin = true,
+                    IsSupervisor = false,
+                    UserRequestTypes = new List<UserRequestType>
+                    {
+                        new UserRequestType { RequestTypeId = 1 }
+                    },
+                    UserZones = new List<UserZone>
+                    {
+                        new UserZone { ZoneId = 1 }
+                    }
+                },
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "supervisor@example.com",
+                    FirstName = "Supervisor",
+                    LastName = "User",
+                    IsAdmin = false,
+                    IsSupervisor = true,
+                    UserRequestTypes = new List<UserRequestType>
+                    {
+                        new UserRequestType { RequestTypeId = 1 }
+                    },
+                    UserZones = new List<UserZone>
+                    {
+                        new UserZone { ZoneId = 1 }
+                    }
+                },
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "user@example.com",
+                    FirstName = "Regular",
+                    LastName = "User",
+                    IsAdmin = false,
+                    IsSupervisor = false,
+                    UserRequestTypes = new List<UserRequestType>
+                    {
+                        new UserRequestType { RequestTypeId = 2 }
+                    },
+                    UserZones = new List<UserZone>
+                    {
+                        new UserZone { ZoneId = 2 }
+                    }
+                }
             };
 
             _dbContext.Users.AddRange(users);
@@ -65,6 +113,28 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             result.ShouldNotBeNull();
             result.Count.ShouldBe(0);
         }
-        
+
+        [Fact]
+        public async Task GetSupervisorsAndAdminsForRequestAsync_Should_Return_Supervisors_And_Admins()
+        {
+            // Act
+            var result = await _repository.GetSupervisorsAndAdminsForRequestAsync(1, 1);
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count.ShouldBe(2); // Only admin and supervisor should match
+            result.ShouldContain(u => u.Email == "admin@example.com");
+            result.ShouldContain(u => u.Email == "supervisor@example.com");
+        }
+
+        [Fact]
+        public async Task GetSupervisorsAndAdminsForRequestAsync_Should_Return_Empty_List_If_No_Match()
+        {
+            // Act
+            var result = await _repository.GetSupervisorsAndAdminsForRequestAsync(3, 1);
+
+            // Assert
+            result.ShouldBeEmpty(); // No users should match for request type 3
+        }
     }
 }
