@@ -5,6 +5,10 @@ using SupportDesk.Application.Contracts.Services;
 using SupportDesk.Application.Constants;
 using SupportDesk.Application.Models.Dtos;
 using SupportDesk.Domain.Enums;
+using Microsoft.Extensions.Logging;
+using SupportDesk.Application.Contracts.Infraestructure.Notifications;
+using SupportDesk.Application.Models.Notifications;
+using SupportDesk.Domain.Entities;
 
 namespace SupportDesk.Application.Features.Requests.Commands.ProcessRequest;
 
@@ -12,16 +16,22 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
 {
     private readonly IRequestRepository _requestRepository;
     private readonly IRequestValidationService _validationService;
+    private readonly INotificationService _notificationService;
     private readonly IMapper _mapper;
+    private readonly ILogger<ProcessRequestCommandHandler> _logger;
 
     public ProcessRequestCommandHandler(
         IRequestRepository requestRepository,
         IRequestValidationService validationService,
-        IMapper mapper)
+        INotificationService notificationService,
+        IMapper mapper,
+        ILogger<ProcessRequestCommandHandler> logger)
     {
         _requestRepository = requestRepository;
         _validationService = validationService;
+        _notificationService = notificationService;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<ProcessRequestCommandResponse> Handle(
@@ -71,9 +81,40 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
 
         await _requestRepository.UpdateAsync(requestToProcess, cancellationToken);
 
-        // 4. Preparar la respuesta.
+        // 4. Enviar notificación al solicitante si la solicitud es aprobada o rechazada.
+        await NotifyRequesterAsync(requestToProcess, cancellationToken);
+
+        // 5. Preparar la respuesta.
         response.ProcessedRequest = _mapper.Map<RequestDto>(requestToProcess);
 
         return response;
+    }
+
+    private async Task NotifyRequesterAsync(Request requestToProcess, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Approved ||
+                requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Rejected)
+            {
+                var notificationMessage = new NotificationMessage
+                {
+                    RecipientUserIds = new List<Guid> { requestToProcess.CreatedBy!.Value },
+
+                    Subject = requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Approved
+                        ? "Solicitud Aprobada"
+                        : "Solicitud Rechazada",
+
+                    Body = $"Su solicitud con ID {requestToProcess.Id} ha sido " +
+                           $"{(requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Approved ? "aprobada" : "rechazada")}."
+                };
+
+                await _notificationService.SendNotificationAsync(notificationMessage, cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, NotificationsMessages.FailedToSendNotificationRequestProcessed);
+        }
     }
 }
