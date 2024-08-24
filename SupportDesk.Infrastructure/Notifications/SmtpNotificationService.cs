@@ -3,6 +3,9 @@ using MimeKit;
 using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Application.Contracts.Infraestructure.Notifications;
 using SupportDesk.Application.Models.Notifications;
+using Polly.Retry;
+using Polly;
+using System.Net.Sockets;
 
 namespace SupportDesk.Infrastructure.Notifications
 {
@@ -14,6 +17,7 @@ namespace SupportDesk.Infrastructure.Notifications
         private readonly string _smtpPassword;
         private readonly IUserRepository _userRepository;
         private readonly ISmtpClient _smtpClient;
+        private readonly AsyncRetryPolicy _retryPolicy;
 
         public SmtpNotificationService(
             string smtpServer,
@@ -49,6 +53,17 @@ namespace SupportDesk.Infrastructure.Notifications
             _smtpPassword = smtpPassword;
             _userRepository = userRepository;
             _smtpClient = smtpClient;
+
+            // Configurar la política de reintento con Polly
+            _retryPolicy = Policy
+                .Handle<SocketException>() // Manejar errores transitorios de red
+                .Or<SmtpCommandException>() // Manejar errores del servidor SMTP
+                .Or<SmtpProtocolException>() // Manejar errores del protocolo SMTP
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                    {
+                        // registrar logs
+                    });
         }
 
         public async Task SendNotificationAsync(
@@ -59,6 +74,11 @@ namespace SupportDesk.Infrastructure.Notifications
                 message.RecipientUserIds,
                 cancellationToken);
 
+            if (recipientEmails is null)
+            {
+                return;
+            }
+
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress("SupportDesk", _smtpUsername));
             emailMessage.To.AddRange(recipientEmails.Select(email => new MailboxAddress("", email)));
@@ -68,18 +88,21 @@ namespace SupportDesk.Infrastructure.Notifications
                 Text = message.Body
             };
 
-            await _smtpClient.ConnectAsync(_smtpServer, _smtpPort, MailKit.Security.SecureSocketOptions.StartTls, cancellationToken);
-            await _smtpClient.AuthenticateAsync(_smtpUsername, _smtpPassword, cancellationToken);
-            await _smtpClient.SendAsync(emailMessage, cancellationToken);
-            await _smtpClient.DisconnectAsync(true, cancellationToken);
+            await _retryPolicy.ExecuteAsync(async () =>
+            {
+                await _smtpClient.ConnectAsync(_smtpServer, _smtpPort, MailKit.Security.SecureSocketOptions.StartTls, cancellationToken);
+                await _smtpClient.AuthenticateAsync(_smtpUsername, _smtpPassword, cancellationToken);
+                await _smtpClient.SendAsync(emailMessage, cancellationToken);
+                await _smtpClient.DisconnectAsync(true, cancellationToken);
+            });
         }
 
-        private async Task<List<string>> GetRecipientEmailsAsync(
+        private async Task<List<string>?> GetRecipientEmailsAsync(
             List<Guid> userIds,
             CancellationToken cancellationToken)
         {
             var users = await _userRepository.GetUsersByIdsAsync(userIds, cancellationToken);
-            return users
+            return users?
                 .Select(user => user.Email)
                 .Where(email => !string.IsNullOrWhiteSpace(email))
                 .ToList();

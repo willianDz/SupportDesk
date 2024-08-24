@@ -7,6 +7,7 @@ using SupportDesk.Application.Models.Notifications;
 using SupportDesk.Infrastructure.Notifications;
 using SupportDesk.Domain.Entities;
 using MailKit;
+using System.Net.Sockets;
 
 namespace SupportDesk.Infrastructure.UnitTests.Notifications
 {
@@ -121,6 +122,52 @@ namespace SupportDesk.Infrastructure.UnitTests.Notifications
                 "password",
                 _userRepositoryMock.Object,
                 _smtpClientMock.Object));
+        }
+
+        [Fact]
+        public async Task SendNotificationAsync_Should_Retry_On_Transient_Failures()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var notificationMessage = new NotificationMessage
+            {
+                RecipientUserIds = new List<Guid> { userId },
+                Subject = "Test Subject",
+                Body = "Test Body"
+            };
+
+            var users = new List<User>
+            {
+                new User
+                {
+                    Id = userId,
+                    Email = "test@example.com"
+                }
+            };
+
+            // Configurar el mock del UserRepository para devolver una lista válida de usuarios
+            _userRepositoryMock
+                .Setup(repo => repo.GetUsersByIdsAsync(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(users);
+
+            _smtpClientMock
+                .SetupSequence(client => client.SendAsync(
+                    It.IsAny<MimeMessage>(),
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<ITransferProgress>()))
+                .ThrowsAsync(new SocketException()) // Falla transitoria en el primer intento
+                .ThrowsAsync(new SmtpCommandException(SmtpErrorCode.MessageNotAccepted, SmtpStatusCode.TransactionFailed, "Test Exception")) // Falla transitoria en el segundo intento
+                .Returns(Task.FromResult(string.Empty)); // Éxito en el tercer intento
+
+            // Act
+            await _smtpNotificationService.SendNotificationAsync(notificationMessage, CancellationToken.None);
+
+            // Assert
+            _smtpClientMock.Verify(client => client.SendAsync(
+                It.IsAny<MimeMessage>(),
+                It.IsAny<CancellationToken>(),
+                It.IsAny<ITransferProgress>()),
+            Times.Exactly(3));
         }
     }
 }
