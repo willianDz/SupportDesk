@@ -136,5 +136,32 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             // Assert
             result.ShouldBeEmpty(); // No users should match for request type 3
         }
+
+        [Fact]
+        public async Task GetSupervisorsByZoneAndRequestTypeAsync_Should_Return_Correct_Supervisors()
+        {
+            // Arrange
+            var zoneId = 1;
+            var requestTypeId = 1;
+
+            var users = new List<User>
+            {
+                new User { Id = Guid.NewGuid(), IsSupervisor = true, IsActive = true, UserZones = new List<UserZone>{ new UserZone{ ZoneId = zoneId } }, UserRequestTypes = new List<UserRequestType>{ new UserRequestType{ RequestTypeId = requestTypeId } } },
+                new User { Id = Guid.NewGuid(), IsSupervisor = true, IsActive = true, UserZones = new List<UserZone>{ new UserZone{ ZoneId = 2 } }, UserRequestTypes = new List<UserRequestType>{ new UserRequestType{ RequestTypeId = requestTypeId } } }, // Different zone
+                new User { Id = Guid.NewGuid(), IsSupervisor = true, IsActive = false, UserZones = new List<UserZone>{ new UserZone{ ZoneId = zoneId } }, UserRequestTypes = new List<UserRequestType>{ new UserRequestType{ RequestTypeId = requestTypeId } } }, // Inactive
+                new User { Id = Guid.NewGuid(), IsSupervisor = true, IsActive = true, UserZones = new List<UserZone>{ new UserZone{ ZoneId = zoneId } }, UserRequestTypes = new List<UserRequestType>{ new UserRequestType{ RequestTypeId = 2 } } } // Different request type
+            };
+            _dbContext.Users.AddRange(users);
+            await _dbContext.SaveChangesAsync();
+
+            // Act
+            var result = await _repository.GetSupervisorsByZoneAndRequestTypeAsync(zoneId, requestTypeId);
+
+            // Assert
+            Assert.NotNull(result);
+            result.Count.ShouldBeGreaterThanOrEqualTo(1);
+            Assert.Equal(zoneId, result.First().UserZones.First().ZoneId);
+            Assert.Equal(requestTypeId, result.First().UserRequestTypes.First().RequestTypeId);
+        }
     }
 }

@@ -9,6 +9,11 @@ using Asp.Versioning;
 using SupportDesk.Api.Endpoints;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
+using SupportDesk.Application.Features.Jobs;
+
 
 namespace SupportDesk.Api;
 
@@ -124,6 +129,29 @@ public static class StartupExtensions
             x.ReportApiVersions = true;
             x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
         }).AddApiExplorer();
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureScheduledTasks(this IServiceCollection services)
+    {
+        services.AddQuartz(q =>
+        {
+            // Usar la inyección de dependencias de ASP.NET Core
+            q.UseMicrosoftDependencyInjectionJobFactory();
+
+            // Registrar los Jobs y Triggers
+            q.AddJob<PendingRequestsAlertJob>(opts => opts.WithIdentity("PendingRequestsAlertJob"));
+            q.AddTrigger(opts => opts
+                .ForJob("PendingRequestsAlertJob")
+                .WithIdentity("PendingRequestsAlertTrigger")
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInHours(12)
+                    .RepeatForever()));
+        });
+
+        services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
         return services;
     }

@@ -141,5 +141,34 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             requests.ShouldBeEmpty();
             totalCount.ShouldBe(0);
         }
+
+        [Fact]
+        public async Task GetPendingRequestsAsync_Should_Return_Correct_Requests()
+        {
+            // Arrange
+            var pendingThreshold = TimeSpan.FromHours(12);
+            var now = DateTime.UtcNow;
+
+            // Add test data to the in-memory database
+            var requests = new List<Request>
+            {
+                new Request { Id = 10, CreatedDate = now.AddHours(-13), ReviewerUserId = null, IsActive = true },
+                new Request { Id = 11, CreatedDate = now.AddHours(-14), ReviewerUserId = null, IsActive = true },
+                new Request { Id = 12, CreatedDate = now.AddHours(-11), ReviewerUserId = null, IsActive = true }, // Should not be included
+                new Request { Id = 13, CreatedDate = now.AddHours(-15), ReviewerUserId = Guid.NewGuid(), IsActive = true }, // Should not be included
+                new Request { Id = 14, CreatedDate = now.AddHours(-16), ReviewerUserId = null, IsActive = false } // Should not be included
+            };
+            _dbContext.Requests.AddRange(requests);
+            await _dbContext.SaveChangesAsync();
+
+            // Act
+            var result = await _repository.GetPendingRequestsAsync(pendingThreshold);
+
+            // Assert
+            Assert.NotNull(result);
+            result.Count.ShouldBeGreaterThanOrEqualTo(2);
+            Assert.Contains(result, r => r.Id == 10);
+            Assert.Contains(result, r => r.Id == 11);
+        }
     }
 }

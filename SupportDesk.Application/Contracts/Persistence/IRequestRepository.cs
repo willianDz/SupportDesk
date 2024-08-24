@@ -13,4 +13,8 @@ public interface IRequestRepository : IAsyncRepository<Request>
         int page,
         int pageSize,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Request>> GetPendingRequestsAsync(
+            TimeSpan pendingThreshold,
+            CancellationToken cancellationToken = default);
 }

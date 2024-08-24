@@ -33,5 +33,19 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
                             u.UserZones!.Any(uz => uz.ZoneId == zoneId))
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<List<User>> GetSupervisorsByZoneAndRequestTypeAsync(
+            int zoneId, 
+            int requestTypeId, 
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Users
+                .Include(u => u.UserZones)
+                .Include(u => u.UserRequestTypes)
+                .Where(u => u.IsSupervisor &&
+                            u.UserZones!.Any(uz => uz.ZoneId == zoneId) &&
+                            u.UserRequestTypes!.Any(urt => urt.RequestTypeId == requestTypeId))
+                .ToListAsync(cancellationToken);
+        }
     }
 }

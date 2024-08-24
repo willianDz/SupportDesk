@@ -12,4 +12,9 @@ public interface IUserRepository : IAsyncRepository<User>
         int requestTypeId, 
         int zoneId, 
         CancellationToken cancellationToken = default);
+
+    Task<List<User>> GetSupervisorsByZoneAndRequestTypeAsync(
+        int zoneId, 
+        int requestTypeId, 
+        CancellationToken cancellationToken = default);
 }

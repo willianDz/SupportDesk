@@ -16,6 +16,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Quartz.AspNetCore" Version="3.13.0" />
+    <PackageReference Include="Quartz.Plugins.TimeZoneConverter" Version="3.13.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.1" />
   </ItemGroup>
 

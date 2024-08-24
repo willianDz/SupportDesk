@@ -66,5 +66,18 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
 
             return (requests, totalCount);
         }
+
+        public async Task<IReadOnlyList<Request>> GetPendingRequestsAsync(
+            TimeSpan pendingThreshold,
+            CancellationToken cancellationToken = default)
+        {
+            var thresholdTime = DateTime.UtcNow.Subtract(pendingThreshold);
+
+            return await _dbContext.Requests
+                .Where(r => r.ReviewerUserId == null
+                            && r.CreatedDate <= thresholdTime
+                            && r.IsActive)
+                .ToListAsync(cancellationToken);
+        }
     }
 }
