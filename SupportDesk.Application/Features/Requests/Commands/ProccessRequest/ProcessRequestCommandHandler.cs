@@ -97,16 +97,20 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
             if (requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Approved ||
                 requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Rejected)
             {
+
+                string message = $"Su solicitud con ID {requestToProcess.Id} ha sido " +
+                           $"{(requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Approved ? "aprobada" : "rechazada")}." +
+                           $"Comentarios del supervisor: {requestToProcess.ReviewerUserComments}";
+
                 var notificationMessage = new NotificationMessage
                 {
                     RecipientUserIds = new List<Guid> { requestToProcess.CreatedBy!.Value },
 
                     Subject = requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Approved
-                        ? "Solicitud Aprobada"
-                        : "Solicitud Rechazada",
+                        ? $"Solicitud {requestToProcess.Id} Aprobada"
+                        : $"Solicitud {requestToProcess.Id} Rechazada",
 
-                    Body = $"Su solicitud con ID {requestToProcess.Id} ha sido " +
-                           $"{(requestToProcess.RequestStatusId == (int)RequestStatusesEnum.Approved ? "aprobada" : "rechazada")}."
+                    Body = message
                 };
 
                 await _notificationService.SendNotificationAsync(notificationMessage, cancellationToken);
