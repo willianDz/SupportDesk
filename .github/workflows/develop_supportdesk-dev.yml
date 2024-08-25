@@ -34,7 +34,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     environment:
-      name: 'Development'
+      name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write
@@ -57,5 +57,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'supportdesk-dev'
-          slot-name: 'Development'
+          slot-name: 'Production'
           package: ${{ github.workspace }}/publish_output
