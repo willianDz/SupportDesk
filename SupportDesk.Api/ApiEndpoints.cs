@@ -42,6 +42,7 @@
 
             public const string CreateUser = Base;
             public const string UpdateUser = Base;
+            public const string InactivateUser = $"{Base}/{{userId:guid}}";
         }
     }
 }
