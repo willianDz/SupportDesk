@@ -1,65 +1,35 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - supportdesk-prod
+name: Deploy to Azure
 
 on:
   push:
     branches:
-      - master
-  workflow_dispatch:
+      - main  # Cambia según la rama de despliegue
 
 jobs:
-  build:
-    runs-on: windows-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 8.x
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+    - name: Publish
+      run: dotnet publish --configuration Release --output ./publish --no-build
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8DAECC9E824D4CCFB49177C1C34F8A57 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1FDAF15CF2404FFFA4AD18081F6BF4E3 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_80964F02230A42FF83D7188AA281520E }}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'supportdesk-prod'
-          slot-name: 'Production'
-          package: .
-          
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: supportdesk-prod  # Cambia según el entorno
+        publish-profile: ${{ secrets.AzureWebAppPublishProfile }}
+        package: ./publish
