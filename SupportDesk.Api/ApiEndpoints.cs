@@ -34,6 +34,13 @@
             private const string Base = $"{ApiBase}/users";
 
             public const string GetMyRequests = $"{Base}/me/requests";
+
+            public static class Profile
+            {
+                private const string ProfileBase = $"{Users.Base}/me/profile";
+                
+                public const string UpdateProfile = ProfileBase;
+            }
         }
 
         public static class UsersManagement
