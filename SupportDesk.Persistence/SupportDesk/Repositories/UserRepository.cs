@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SupportDesk.Application.Constants;
 using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Domain.Entities;
 
@@ -53,5 +54,38 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         return await _dbContext.Users
             .Where(u => u.IsAdmin && u.IsActive)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Email == email && u.IsActive, cancellationToken);
+    }
+
+    public async Task SaveTwoFactorCodeAsync(Guid userId, string twoFactorCode, CancellationToken cancellationToken = default)
+    {
+        var user = await _dbContext.Users.FindAsync(new object[] { userId }, cancellationToken);
+
+        if (user == null)
+        {
+            throw new InvalidOperationException(UsersMessages.UserNotFound);
+        }
+
+        user.TwoFactorCode = twoFactorCode;
+        user.TwoFactorCodeExpiration = DateTime.UtcNow.AddMinutes(10); // Código válido por 10 minutos
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> ValidateTwoFactorCodeAsync(Guid userId, string twoFactorCode, CancellationToken cancellationToken = default)
+    {
+        var user = await _dbContext.Users.FindAsync(new object[] { userId }, cancellationToken);
+
+        if (user == null || user.TwoFactorCodeExpiration < DateTime.UtcNow)
+        {
+            return false;
+        }
+
+        return user.TwoFactorCode == twoFactorCode;
     }
 }

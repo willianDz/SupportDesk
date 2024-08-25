@@ -79,6 +79,15 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
                     {
                         new UserZone { ZoneId = 2 }
                     }
+                },
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "testuser@example.com",
+                    FirstName = "Test",
+                    LastName = "User",
+                    PasswordHash = "hashedPassword",
+                    IsActive = true
                 }
             };
 
@@ -209,6 +218,93 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
             Assert.NotNull(adminUsers);
             adminUsers.Count.ShouldBeGreaterThanOrEqualTo(2);
             Assert.All(adminUsers, u => Assert.True(u.IsActive));
+        }
+
+
+
+
+        [Fact]
+        public async Task GetByEmailAsync_Should_Return_User_When_Email_Exists()
+        {
+            // Act
+            var result = await _repository.GetByEmailAsync("testuser@example.com", CancellationToken.None);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("testuser@example.com", result.Email);
+        }
+
+        [Fact]
+        public async Task GetByEmailAsync_Should_Return_Null_When_Email_Does_Not_Exist()
+        {
+            // Act
+            var result = await _repository.GetByEmailAsync("nonexistent@example.com", CancellationToken.None);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task SaveTwoFactorCodeAsync_Should_Save_Code_Correctly()
+        {
+            // Arrange
+            var user = await _repository.GetByEmailAsync("testuser@example.com", CancellationToken.None);
+            var twoFactorCode = "123456";
+
+            // Act
+            await _repository.SaveTwoFactorCodeAsync(user.Id, twoFactorCode, CancellationToken.None);
+            var updatedUser = await _repository.GetByEmailAsync("testuser@example.com", CancellationToken.None);
+
+            // Assert
+            Assert.Equal(twoFactorCode, updatedUser.TwoFactorCode);
+            Assert.True(updatedUser.TwoFactorCodeExpiration > DateTime.UtcNow);
+        }
+
+        [Fact]
+        public async Task ValidateTwoFactorCodeAsync_Should_Return_True_When_Code_Is_Valid()
+        {
+            // Arrange
+            var user = await _repository.GetByEmailAsync("testuser@example.com", CancellationToken.None);
+            var twoFactorCode = "123456";
+
+            await _repository.SaveTwoFactorCodeAsync(user.Id, twoFactorCode, CancellationToken.None);
+
+            // Act
+            var isValid = await _repository.ValidateTwoFactorCodeAsync(user.Id, twoFactorCode, CancellationToken.None);
+
+            // Assert
+            Assert.True(isValid);
+        }
+
+        [Fact]
+        public async Task ValidateTwoFactorCodeAsync_Should_Return_False_When_Code_Is_Invalid()
+        {
+            // Arrange
+            var user = await _repository.GetByEmailAsync("testuser@example.com", CancellationToken.None);
+
+            await _repository.SaveTwoFactorCodeAsync(user.Id, "123456", CancellationToken.None);
+
+            // Act
+            var isValid = await _repository.ValidateTwoFactorCodeAsync(user.Id, "WrongCode", CancellationToken.None);
+
+            // Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public async Task ValidateTwoFactorCodeAsync_Should_Return_False_When_Code_Has_Expired()
+        {
+            // Arrange
+            var user = await _repository.GetByEmailAsync("testuser@example.com", CancellationToken.None);
+            user.TwoFactorCodeExpiration = DateTime.UtcNow.AddMinutes(-1); // Expirado
+            _dbContext.Users.Update(user);
+            _dbContext.SaveChanges();
+
+            // Act
+            var isValid = await _repository.ValidateTwoFactorCodeAsync(user.Id, "123456", CancellationToken.None);
+
+            // Assert
+            Assert.False(isValid);
         }
     }
 }

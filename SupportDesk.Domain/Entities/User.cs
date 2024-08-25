@@ -14,6 +14,8 @@ namespace SupportDesk.Domain.Entities
         public bool IsAdmin { get; set; }
         public bool IsSupervisor { get; set; }
         public string PasswordHash { get; set; } = string.Empty!;
+        public string? TwoFactorCode { get; set; }
+        public DateTime? TwoFactorCodeExpiration { get; set; }
 
         public Gender? Gender { get; set; }
         public ICollection<UserZone>? UserZones { get; set; }

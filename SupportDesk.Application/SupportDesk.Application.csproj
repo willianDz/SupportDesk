@@ -10,11 +10,6 @@
     <ProjectReference Include="..\SupportDesk.Domain\SupportDesk.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Enum\" />
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>

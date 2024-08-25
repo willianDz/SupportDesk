@@ -16,6 +16,8 @@
             private const string Base = $"{ApiBase}/auth";
 
             public const string RefreshToken = $"{Base}/refreshToken";
+            public const string Login = $"{Base}/login";
+            public const string VerifyTwoFactor = $"{Base}/verifytwofactor";
         }
 
         public static class Requests

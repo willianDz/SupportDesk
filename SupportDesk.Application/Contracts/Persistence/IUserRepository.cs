@@ -20,4 +20,10 @@ public interface IUserRepository : IAsyncRepository<User>
 
     Task<List<User>> GetAdminUsersAsync(
         CancellationToken cancellationToken = default);
+
+    Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+    Task SaveTwoFactorCodeAsync(Guid userId, string twoFactorCode, CancellationToken cancellationToken = default);
+
+    Task<bool> ValidateTwoFactorCodeAsync(Guid userId, string twoFactorCode, CancellationToken cancellationToken = default);
 }

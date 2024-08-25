@@ -43,6 +43,11 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
             builder.Property(u => u.PasswordHash)
                 .IsRequired();
 
+            builder.Property(u => u.TwoFactorCode)
+                .IsRequired(false);
+
+            builder.Property(u => u.TwoFactorCodeExpiration)
+                .IsRequired(false);
 
 
             builder.HasOne(u => u.Gender)
