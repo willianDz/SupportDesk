@@ -1,60 +1,35 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - supportdesk-dev
+name: Deploy to Azure
 
 on:
   push:
     branches:
-      - develop
-  workflow_dispatch:
+      - main  # Cambia según la rama de despliegue
 
 jobs:
-  build:
-    runs-on: windows-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 8.x
 
-      - name: Build with dotnet
-        run: dotnet build SupportDesk.Api/SupportDesk.Api.csproj --configuration Release
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: dotnet publish
-        run: dotnet publish SupportDesk.Api/SupportDesk.Api.csproj -c Release -o ${{ github.workspace }}/publish_output
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{ github.workspace }}/publish_output
+    - name: Publish
+      run: dotnet publish --configuration Release --output ./publish --no-build
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0D01BE9205034B3381FA8AEF271FE3F7 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4282E82ABCF44646A8B9F464EB0BA18F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_517DB5692E5C40C18C88929FD80CAAE1 }}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'supportdesk-dev'
-          package: ${{ github.workspace }}/publish_output
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: supportdesk-dev
+        publish-profile: ${{ secrets.AzureWebAppPublishProfileDev }}
+        package: ./publish
