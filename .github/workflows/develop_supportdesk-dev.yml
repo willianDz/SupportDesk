@@ -57,5 +57,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'supportdesk-dev'
-          slot-name: 'Development'
           package: ${{ github.workspace }}/publish_output
