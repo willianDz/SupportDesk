@@ -40,6 +40,11 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
             builder.Property(u => u.IsSupervisor)
                 .IsRequired();
 
+            builder.Property(u => u.PasswordHash)
+                .IsRequired();
+
+
+
             builder.HasOne(u => u.Gender)
                 .WithMany(g => g.Users)
                 .HasForeignKey(u => u.GenderId)

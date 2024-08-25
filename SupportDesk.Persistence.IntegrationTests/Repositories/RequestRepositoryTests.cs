@@ -63,7 +63,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
 
                 //
                 new Request { RequestStatusId = (int)RequestStatusesEnum.New, CreatedDate = DateTime.UtcNow.AddDays(-1), IsActive = true },
-                new Request { RequestStatusId = (int)RequestStatusesEnum.Approved, CreatedDate = DateTime.UtcNow.AddDays(-2), LastModifiedDate = DateTime.UtcNow.AddDays(-1), ReviewerUserId = Guid.NewGuid(), IsActive = true },
+                new Request { RequestStatusId = (int)RequestStatusesEnum.Approved, CreatedDate = DateTime.UtcNow.AddDays(-2), LastModifiedDate = DateTime.UtcNow.AddDays(-1), ApprovalRejectionDate = DateTime.UtcNow.AddDays(-1), ReviewerUserId = Guid.NewGuid(), IsActive = true },
                 new Request { RequestStatusId = (int)RequestStatusesEnum.Rejected, CreatedDate = DateTime.UtcNow.AddDays(-3), IsActive = true },
                 new Request { RequestStatusId = (int)RequestStatusesEnum.UnderReview, CreatedDate = DateTime.UtcNow.AddDays(-2), ReviewerUserId = Guid.NewGuid(), IsActive = true }
             );
@@ -239,6 +239,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
                 {
                     CreatedDate = DateTime.UtcNow.AddHours(-3),
                     LastModifiedDate = DateTime.UtcNow,
+                    ApprovalRejectionDate = DateTime.UtcNow,
                     ReviewerUserId = Guid.NewGuid(),
                     RequestStatusId = (int)RequestStatusesEnum.Approved,
                     IsActive = true
@@ -247,6 +248,7 @@ namespace SupportDesk.Persistence.IntegrationTests.Repositories
                 {
                     CreatedDate = DateTime.UtcNow.AddHours(-5),
                     LastModifiedDate = DateTime.UtcNow.AddHours(-1),
+                    ApprovalRejectionDate = DateTime.UtcNow.AddHours(-1),
                     ReviewerUserId = Guid.NewGuid(),
                     RequestStatusId = (int)RequestStatusesEnum.Approved,
                     IsActive = true

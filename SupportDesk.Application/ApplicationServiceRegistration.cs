@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SupportDesk.Application.Contracts.Services;
+using SupportDesk.Application.Features.Alerts;
+using SupportDesk.Application.Features.Reports;
 using SupportDesk.Application.Services;
 using System.Reflection;
 
@@ -13,6 +15,11 @@ public static class ApplicationServiceRegistration
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddTransient<IRequestValidationService, RequestValidationService>();
+
+        services.AddScoped<IExpiringRequestsAlertService, ExpiringRequestsAlertService>();
+        services.AddScoped<IPendingRequestsAlertService, PendingRequestsAlertService>();
+        services.AddScoped<IDailyReportService, DailyReportService>();
+        services.AddScoped<IWeeklyReportService, WeeklyReportService>();
 
         return services;
     }

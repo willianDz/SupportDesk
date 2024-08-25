@@ -105,8 +105,8 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
         public async Task<int> GetProcessedRequestsCountByDateAsync(DateTime date, CancellationToken cancellationToken)
         {
             return await _dbContext.Requests
-                .CountAsync(r => r.LastModifiedDate != null &&
-                                 r.LastModifiedDate.Value.Date == date.Date &&
+                .CountAsync(r => r.ApprovalRejectionDate != null &&
+                                 r.ApprovalRejectionDate.Value.Date == date.Date &&
                                  (r.RequestStatusId == (int)RequestStatusesEnum.Approved ||
                                   r.RequestStatusId == (int)RequestStatusesEnum.Rejected) &&
                                  r.IsActive, cancellationToken);
@@ -126,11 +126,11 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
             var requestTimes = await _dbContext.Requests
                 .Where(r => r.ReviewerUserId != null &&
                             r.RequestStatusId == (int)RequestStatusesEnum.Approved &&
-                            r.LastModifiedDate != null)
+                            r.ApprovalRejectionDate != null)
                 .Select(r => new
                 {
                     r.CreatedDate,
-                    LastModifiedDate = r.LastModifiedDate.Value
+                    ApprovalRejectionDate = r.ApprovalRejectionDate.Value
                 })
                 .ToListAsync(cancellationToken);
 
@@ -140,7 +140,7 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
             }
 
             var averageTicks = requestTimes
-                .Average(rt => (rt.LastModifiedDate - rt.CreatedDate).Ticks);
+                .Average(rt => (rt.ApprovalRejectionDate - rt.CreatedDate).Ticks);
 
             return TimeSpan.FromTicks((long)averageTicks);
         }
@@ -195,7 +195,7 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
                 .Where(r => r.ReviewerUserId != null &&
                             r.RequestStatusId == (int)RequestStatusesEnum.Approved &&
                             r.CreatedDate >= startDate && r.CreatedDate <= endDate)
-                .AverageAsync(r => (r.LastModifiedDate!.Value - r.CreatedDate).Ticks, cancellationToken);
+                .AverageAsync(r => (r.ApprovalRejectionDate!.Value - r.CreatedDate).Ticks, cancellationToken);
 
             return TimeSpan.FromTicks(Convert.ToInt64(averageTicks));
         }

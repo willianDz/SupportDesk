@@ -74,10 +74,14 @@ public class ProcessRequestCommandHandler : IRequestHandler<ProcessRequestComman
             requestToProcess.StartReviewDate = DateTime.UtcNow;
         }
 
+        if (request.NewStatusId == (int)RequestStatusesEnum.Approved
+            || request.NewStatusId == (int)RequestStatusesEnum.Rejected)
+        {
+            requestToProcess.ApprovalRejectionDate = DateTime.UtcNow;
+        }
+
         requestToProcess.RequestStatusId = request.NewStatusId;
         requestToProcess.ReviewerUserComments = request.ReviewerUserComments;
-        requestToProcess.LastModifiedBy = request.UserId;
-        requestToProcess.LastModifiedDate = DateTime.UtcNow;
 
         await _requestRepository.UpdateAsync(requestToProcess, cancellationToken);
 

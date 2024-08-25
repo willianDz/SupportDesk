@@ -13,6 +13,7 @@ namespace SupportDesk.Domain.Entities
         public string? PhotoUrl { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsSupervisor { get; set; }
+        public string PasswordHash { get; set; } = string.Empty!;
 
         public Gender? Gender { get; set; }
         public ICollection<UserZone>? UserZones { get; set; }
