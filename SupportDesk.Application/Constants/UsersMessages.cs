@@ -8,4 +8,5 @@ public static class UsersMessages
     public const string InvalidLastName = "Apellidos inválidos.";
     public const string InvalidPassword = "Contraseña inválida.";
     public const string UserNotFound = "El usuario no existe o está inactivo.";
+    public const string UserIsInactive = "El usuario está inactivo.";
 }

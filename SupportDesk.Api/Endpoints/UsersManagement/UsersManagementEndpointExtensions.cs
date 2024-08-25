@@ -7,6 +7,7 @@ public static class UsersManagementEndpointExtensions
         app.MapCreateUser();
         app.MapUpdateUser();
         app.MapInactivateUser();
+        app.MapGetUserById();
 
         return app;
     }
