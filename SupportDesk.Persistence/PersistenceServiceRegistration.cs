@@ -20,6 +20,18 @@ namespace SupportDesk.Persistence
             services.AddScoped<IRequestRepository, RequestRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
+            // Aplicar las migraciones automáticamente
+            try
+            {
+                var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+                context.Database.Migrate();  // Aplica todas las migraciones pendientes
+            }
+            catch (Exception ex)
+            {
+                // Manejar cualquier error en la migración
+                Console.WriteLine($"Ocurrió un error al aplicar las migraciones: {ex.Message}");
+            }
+
             return services;
         }
     }

@@ -15,12 +15,7 @@ public class Program
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-            .AddEnvironmentVariables();  // Cargar las variables de entorno
-
-        Console.WriteLine($"JWT Key: {builder.Configuration["Jwt:Key"]}");
-        Console.WriteLine($"JWT Issuer: {builder.Configuration["Jwt:Issuer"]}");
-        Console.WriteLine($"JWT Audience: {builder.Configuration["Jwt:Audience"]}");
-
+            .AddEnvironmentVariables();
 
         builder.Services
             .ConfigureAuthentication(builder.Configuration)
