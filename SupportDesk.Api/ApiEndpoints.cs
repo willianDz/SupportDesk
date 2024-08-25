@@ -35,5 +35,12 @@
 
             public const string GetMyRequests = $"{Base}/me/requests";
         }
+
+        public static class UsersManagement
+        {
+            private const string Base = $"{ApiBase}/usersmanagement";
+
+            public const string CreateUser = Base;
+        }
     }
 }

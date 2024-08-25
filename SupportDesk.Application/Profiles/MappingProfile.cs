@@ -13,7 +13,7 @@ public class MappingProfile : Profile
         CreateMap<RequestDocument, RequestDocumentDto>();
         CreateMap<RequestStatus, RequestStatusDto>();
         CreateMap<RequestType, RequestTypeDto>();
-        CreateMap<User, UserDto>();
+        CreateMap<User, UserDto>().ForMember(x => x.PhotoUrl, opt => opt.MapFrom(x => x.PhotoUrl));
         CreateMap<UserRequestType, UserRequestTypeDto>();
         CreateMap<UserZone, UserZoneDto>();
         CreateMap<Zone, ZoneDto>();

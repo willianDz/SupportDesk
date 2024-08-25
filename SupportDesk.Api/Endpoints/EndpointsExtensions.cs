@@ -1,6 +1,7 @@
 ﻿using SupportDesk.Api.Endpoints.Auth;
 using SupportDesk.Api.Endpoints.Requests;
 using SupportDesk.Api.Endpoints.Users;
+using SupportDesk.Api.Endpoints.UsersManagement;
 using SupportDesk.Api.Endpoints.WeatherForecast;
 
 namespace SupportDesk.Api.Endpoints;
@@ -12,6 +13,7 @@ public static class EndpointsExtensions
         app.MapAuthEndpoints();
         app.MapRequestsEndpoints();
         app.MapUsersEndpoints();
+        app.MapUsersManagementEndpoints();
         app.MapWeatherForecastEndpoints();
         return app;
     }

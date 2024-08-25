@@ -20,6 +20,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IPendingRequestsAlertService, PendingRequestsAlertService>();
         services.AddScoped<IDailyReportService, DailyReportService>();
         services.AddScoped<IWeeklyReportService, WeeklyReportService>();
+        services.AddScoped<IPasswordService, PasswordService>();
 
         return services;
     }
