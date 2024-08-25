@@ -21,6 +21,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IDailyReportService, DailyReportService>();
         services.AddScoped<IWeeklyReportService, WeeklyReportService>();
         services.AddScoped<IPasswordService, PasswordService>();
+        services.AddScoped<ITwoFactorService, TwoFactorService>();
 
         return services;
     }

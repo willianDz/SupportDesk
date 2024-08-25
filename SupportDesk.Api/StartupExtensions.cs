@@ -49,7 +49,7 @@ public static class StartupExtensions
         // Configurar la ruta para servir archivos estáticos
         app.UseStaticFiles(new StaticFileOptions
         {
-            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "FileStorage")),
+            FileProvider = new PhysicalFileProvider(CreateAndGetFileStorageDirectory()),
             RequestPath = "/files"
         });
 
@@ -200,5 +200,15 @@ public static class StartupExtensions
         services.AddHealthChecks();
 
         return services;
+    }
+
+    private static string CreateAndGetFileStorageDirectory()
+    {
+        var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+        return directoryPath;
     }
 }
