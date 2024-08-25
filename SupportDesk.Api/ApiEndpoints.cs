@@ -41,6 +41,7 @@
             private const string Base = $"{ApiBase}/usersmanagement";
 
             public const string CreateUser = Base;
+            public const string UpdateUser = Base;
         }
     }
 }
