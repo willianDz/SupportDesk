@@ -19,16 +19,16 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build SupportDesk.Api/SupportDesk.Api.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish SupportDesk.Api/SupportDesk.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish SupportDesk.Api/SupportDesk.Api.csproj -c Release -o ${{ github.workspace }}/publish_output
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{ github.workspace }}/publish_output
 
   deploy:
     runs-on: windows-latest
@@ -58,4 +58,4 @@ jobs:
         with:
           app-name: 'supportdesk-dev'
           slot-name: 'Development'
-          package: ${{env.DOTNET_ROOT}}/myapp
+          package: ${{ github.workspace }}/publish_output
