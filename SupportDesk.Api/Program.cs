@@ -10,6 +10,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // Configuración del archivo appsettings.json y otros archivos de configuración
+        builder.Configuration
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+            .AddEnvironmentVariables();  // Cargar las variables de entorno
+
         builder.Services
             .ConfigureAuthentication(builder.Configuration)
             .ConfigureAuthorization()
