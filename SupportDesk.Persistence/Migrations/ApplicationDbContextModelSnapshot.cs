@@ -64,7 +64,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             GenderId = 1,
                             Abbreviation = "M",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 408, DateTimeKind.Utc).AddTicks(7256),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 889, DateTimeKind.Utc).AddTicks(8914),
                             Description = "Masculino",
                             IsActive = true
                         },
@@ -72,7 +72,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             GenderId = 2,
                             Abbreviation = "F",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 408, DateTimeKind.Utc).AddTicks(7260),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 889, DateTimeKind.Utc).AddTicks(8919),
                             Description = "Femenino",
                             IsActive = true
                         });
@@ -270,7 +270,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 1,
                             Abbreviation = "TI",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 410, DateTimeKind.Utc).AddTicks(8927),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(718),
                             Description = "Tecnología de la información",
                             IsActive = true
                         },
@@ -278,7 +278,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 2,
                             Abbreviation = "RRHH",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 410, DateTimeKind.Utc).AddTicks(8929),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(721),
                             Description = "Recursos Humanos",
                             IsActive = true
                         },
@@ -286,7 +286,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 3,
                             Abbreviation = "LEGA",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 410, DateTimeKind.Utc).AddTicks(8930),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(727),
                             Description = "Legal",
                             IsActive = true
                         },
@@ -294,7 +294,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 4,
                             Abbreviation = "MANT",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 410, DateTimeKind.Utc).AddTicks(8931),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(728),
                             Description = "Mantenimiento",
                             IsActive = true
                         },
@@ -302,7 +302,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 5,
                             Abbreviation = "MKT",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 410, DateTimeKind.Utc).AddTicks(8932),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(729),
                             Description = "Mercadeo",
                             IsActive = true
                         });
@@ -405,15 +405,16 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cd9ad7b9-a45f-40df-b29f-6a6d3ab28555"),
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 411, DateTimeKind.Utc).AddTicks(7544),
+                            Id = new Guid("0ddbe7e3-c913-4e02-9db3-51b86d5bd6b4"),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(952),
                             Email = "williandiaz0012@gmail.com",
                             FirstName = "Administrador",
+                            GenderId = 1,
                             IsActive = true,
                             IsAdmin = true,
                             IsSupervisor = true,
                             LastName = "Administrador",
-                            PasswordHash = ""
+                            PasswordHash = "$2a$11$9tnjQB0OK4fm6CyM.MHlseAVS3VmpUqhLk0.oS4.fH3qcY2YKPSdW"
                         });
                 });
 
@@ -535,7 +536,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 1,
                             Abbreviation = "ZN",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 412, DateTimeKind.Utc).AddTicks(1876),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5507),
                             Description = "Zona Norte",
                             IsActive = true
                         },
@@ -543,7 +544,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 2,
                             Abbreviation = "ZS",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 412, DateTimeKind.Utc).AddTicks(1880),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5509),
                             Description = "Zona Sur",
                             IsActive = true
                         },
@@ -551,7 +552,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 3,
                             Abbreviation = "ZC",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 412, DateTimeKind.Utc).AddTicks(1881),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5510),
                             Description = "Zona Centro",
                             IsActive = true
                         },
@@ -559,7 +560,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 4,
                             Abbreviation = "ZO",
-                            CreatedDate = new DateTime(2024, 8, 25, 23, 37, 57, 412, DateTimeKind.Utc).AddTicks(1891),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5511),
                             Description = "Zona Occidente",
                             IsActive = true
                         });

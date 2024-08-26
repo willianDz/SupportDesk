@@ -80,7 +80,10 @@ namespace SupportDesk.Persistence.SupportDesk.Configuration
                 FirstName = "Administrador",
                 LastName = "Administrador",
                 IsAdmin = true,
-                IsSupervisor = true
+                IsSupervisor = true,
+                GenderId = 1,
+                IsActive = true,
+                PasswordHash = "$2a$11$9tnjQB0OK4fm6CyM.MHlseAVS3VmpUqhLk0.oS4.fH3qcY2YKPSdW",
             });
         }
     }

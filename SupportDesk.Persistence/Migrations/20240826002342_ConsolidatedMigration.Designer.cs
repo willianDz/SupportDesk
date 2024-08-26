@@ -12,8 +12,8 @@ using SupportDesk.Persistence.SupportDesk;
 namespace SupportDesk.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240825032157_AddPasswordHashToUser")]
-    partial class AddPasswordHashToUser
+    [Migration("20240826002342_ConsolidatedMigration")]
+    partial class ConsolidatedMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,7 +67,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             GenderId = 1,
                             Abbreviation = "M",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 532, DateTimeKind.Utc).AddTicks(7127),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 889, DateTimeKind.Utc).AddTicks(8914),
                             Description = "Masculino",
                             IsActive = true
                         },
@@ -75,7 +75,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             GenderId = 2,
                             Abbreviation = "F",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 532, DateTimeKind.Utc).AddTicks(7131),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 889, DateTimeKind.Utc).AddTicks(8919),
                             Description = "Femenino",
                             IsActive = true
                         });
@@ -273,7 +273,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 1,
                             Abbreviation = "TI",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 535, DateTimeKind.Utc).AddTicks(7609),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(718),
                             Description = "Tecnología de la información",
                             IsActive = true
                         },
@@ -281,7 +281,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 2,
                             Abbreviation = "RRHH",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 535, DateTimeKind.Utc).AddTicks(7612),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(721),
                             Description = "Recursos Humanos",
                             IsActive = true
                         },
@@ -289,7 +289,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 3,
                             Abbreviation = "LEGA",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 535, DateTimeKind.Utc).AddTicks(7614),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(727),
                             Description = "Legal",
                             IsActive = true
                         },
@@ -297,7 +297,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 4,
                             Abbreviation = "MANT",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 535, DateTimeKind.Utc).AddTicks(7615),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(728),
                             Description = "Mantenimiento",
                             IsActive = true
                         },
@@ -305,7 +305,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             RequestTypeId = 5,
                             Abbreviation = "MKT",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 535, DateTimeKind.Utc).AddTicks(7616),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 893, DateTimeKind.Utc).AddTicks(729),
                             Description = "Mercadeo",
                             IsActive = true
                         });
@@ -393,6 +393,12 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("text");
 
+                    b.Property<string>("TwoFactorCode")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("TwoFactorCodeExpiration")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GenderId");
@@ -402,15 +408,16 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7e252744-fd43-4f0b-8420-0b01b18c32ee"),
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 536, DateTimeKind.Utc).AddTicks(7894),
+                            Id = new Guid("0ddbe7e3-c913-4e02-9db3-51b86d5bd6b4"),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(952),
                             Email = "williandiaz0012@gmail.com",
                             FirstName = "Administrador",
+                            GenderId = 1,
                             IsActive = true,
                             IsAdmin = true,
                             IsSupervisor = true,
                             LastName = "Administrador",
-                            PasswordHash = ""
+                            PasswordHash = "$2a$11$9tnjQB0OK4fm6CyM.MHlseAVS3VmpUqhLk0.oS4.fH3qcY2YKPSdW"
                         });
                 });
 
@@ -532,7 +539,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 1,
                             Abbreviation = "ZN",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 537, DateTimeKind.Utc).AddTicks(4049),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5507),
                             Description = "Zona Norte",
                             IsActive = true
                         },
@@ -540,7 +547,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 2,
                             Abbreviation = "ZS",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 537, DateTimeKind.Utc).AddTicks(4052),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5509),
                             Description = "Zona Sur",
                             IsActive = true
                         },
@@ -548,7 +555,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 3,
                             Abbreviation = "ZC",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 537, DateTimeKind.Utc).AddTicks(4054),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5510),
                             Description = "Zona Centro",
                             IsActive = true
                         },
@@ -556,7 +563,7 @@ namespace SupportDesk.Persistence.Migrations
                         {
                             ZoneId = 4,
                             Abbreviation = "ZO",
-                            CreatedDate = new DateTime(2024, 8, 25, 3, 21, 56, 537, DateTimeKind.Utc).AddTicks(4065),
+                            CreatedDate = new DateTime(2024, 8, 26, 0, 23, 37, 894, DateTimeKind.Utc).AddTicks(5511),
                             Description = "Zona Occidente",
                             IsActive = true
                         });
