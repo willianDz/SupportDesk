@@ -3,7 +3,7 @@ name: Deploy to Azure
 on:
   push:
     branches:
-      - main  # Cambia según la rama de despliegue
+      - Production
 
 jobs:
   build-and-deploy:
@@ -30,6 +30,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: supportdesk-prod  # Cambia según el entorno
-        publish-profile: ${{ secrets.AzureWebAppPublishProfile }}
+        app-name: supportdesk-prod
+        publish-profile: ${{ secrets.AzureWebAppPublishProfileProd }}
         package: ./publish
