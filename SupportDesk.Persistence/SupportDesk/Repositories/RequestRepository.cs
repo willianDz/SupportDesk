@@ -2,6 +2,7 @@
 using SupportDesk.Application.Contracts.Persistence;
 using SupportDesk.Domain.Entities;
 using SupportDesk.Domain.Enums;
+using System.Linq.Expressions;
 
 namespace SupportDesk.Persistence.SupportDesk.Repositories
 {
@@ -198,6 +199,11 @@ namespace SupportDesk.Persistence.SupportDesk.Repositories
                 .AverageAsync(r => (r.ApprovalRejectionDate!.Value - r.CreatedDate).Ticks, cancellationToken);
 
             return TimeSpan.FromTicks(Convert.ToInt64(averageTicks));
+        }
+
+        public async Task<int> CountAsync(Expression<Func<Request, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Requests.CountAsync(predicate, cancellationToken);
         }
     }
 }

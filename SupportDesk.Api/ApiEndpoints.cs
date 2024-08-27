@@ -36,6 +36,7 @@
             private const string Base = $"{ApiBase}/users";
 
             public const string GetMyRequests = $"{Base}/me/requests";
+            public const string GetMySummary = $"{Base}/me/summary";
 
             public static class Profile
             {

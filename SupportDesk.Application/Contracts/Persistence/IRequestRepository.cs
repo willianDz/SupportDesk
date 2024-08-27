@@ -1,4 +1,5 @@
 ﻿using SupportDesk.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace SupportDesk.Application.Contracts.Persistence;
 
@@ -54,4 +55,6 @@ public interface IRequestRepository : IAsyncRepository<Request>
         DateTime startDate, 
         DateTime endDate, 
         CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(Expression<Func<Request, bool>> predicate, CancellationToken cancellationToken = default);
 }
