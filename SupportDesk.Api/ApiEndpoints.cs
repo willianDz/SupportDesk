@@ -42,6 +42,7 @@
                 private const string ProfileBase = $"{Users.Base}/me/profile";
                 
                 public const string UpdateProfile = ProfileBase;
+                public const string GetUserInformation = $"{ProfileBase}/GetUserInformation";
             }
         }
 
