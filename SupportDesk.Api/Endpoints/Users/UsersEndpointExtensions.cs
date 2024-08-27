@@ -9,6 +9,7 @@ public static class UsersEndpointExtensions
     {
         app.MapGetMyRequests();
         app.MapUpdateProfile();
+        app.MapGetUserInformation();
 
         return app;
     }
