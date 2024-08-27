@@ -1,5 +1,6 @@
 ﻿using SupportDesk.Api.Endpoints.Users.Profile;
 using SupportDesk.Api.Endpoints.Users.Requests;
+using SupportDesk.Api.Endpoints.UsersManagement;
 
 namespace SupportDesk.Api.Endpoints.Users;
 
