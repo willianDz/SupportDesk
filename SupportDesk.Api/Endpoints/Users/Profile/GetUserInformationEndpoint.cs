@@ -11,11 +11,18 @@ public static class GetUserInformationEndpoint
     public static IEndpointRouteBuilder MapGetUserInformation(this IEndpointRouteBuilder app)
     {
         app.MapGet(ApiEndpoints.Users.Profile.GetUserInformation, async (
-            Guid userId,
-            IMediator mediator,
+        IMediator mediator,
+            HttpContext httpContext,
             CancellationToken token) =>
         {
-            var query = new GetUserByIdQuery { UserId = userId };
+            var userId = httpContext.GetUserId();
+
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            var query = new GetUserByIdQuery { UserId = userId!.Value };
 
             var response = await mediator.Send(query, token);
 
