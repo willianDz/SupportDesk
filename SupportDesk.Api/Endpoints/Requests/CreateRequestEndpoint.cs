@@ -42,7 +42,8 @@ public static class CreateRequestEndpoint
             .Produces<CreateRequestCommandResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
-            .RequireAuthorization(AuthConstants.TrustedMemberPolicyName);
+            .RequireAuthorization(AuthConstants.TrustedMemberPolicyName)
+            .DisableAntiforgery();
 
         return app;
     }
