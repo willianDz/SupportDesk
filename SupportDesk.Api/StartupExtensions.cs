@@ -11,6 +11,7 @@ using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 using Quartz;
 using SupportDesk.Application.Features.Jobs;
+using SupportDesk.Api.Mapping;
 
 
 namespace SupportDesk.Api;
@@ -24,6 +25,7 @@ public static class StartupExtensions
         builder.Services.AddInfrastructureServices(builder.Configuration);
 
         builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+        builder.Services.AddAntiforgery();
 
         return builder.Build();
     }
@@ -58,6 +60,8 @@ public static class StartupExtensions
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseOutputCache();
+        app.UseMiddleware<ValidationMappingMiddleware>();
+        app.UseAntiforgery();
         app.MapApiEndpoints();
 
         return app;
