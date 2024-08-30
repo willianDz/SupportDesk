@@ -34,7 +34,8 @@ public static class CreateUserEndpoint
         .Produces<CreateUserCommandResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
-        .RequireAuthorization(AuthConstants.AdminUserPolicyName);
+        .RequireAuthorization(AuthConstants.AdminUserPolicyName)
+        .DisableAntiforgery();
 
         return app;
     }
